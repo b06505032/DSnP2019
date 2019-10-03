@@ -67,9 +67,12 @@ CmdParser::readCmdInt(istream& istr)
          case ARROW_LEFT_KEY : /* TODO */ moveBufPtr(_readBufPtr - 1); break;
          case PG_UP_KEY      : moveToHistory(_historyIdx - PG_OFFSET); break;
          case PG_DOWN_KEY    : moveToHistory(_historyIdx + PG_OFFSET); break;
-         case TAB_KEY        : /* TODO */ break;
+         case TAB_KEY        : /* TODO */ 
+                               if (((_readBufPtr-_readBuf+1)%8) == 0 ) insertChar(' ', 1);
+                               else insertChar(' ', 9-((_readBufPtr-_readBuf+1)%8));
+                               break;
          case INSERT_KEY     : // not yet supported; fall through to UNDEFINE
-         case UNDEFINED_KEY:   mybeep(); break;
+         case UNDEFINED_KEY  : mybeep(); break;
          default:  // printable character
             insertChar(char(pch)); break;
       }
@@ -252,7 +255,7 @@ CmdParser::moveToHistory(int index)
    if(index < _historyIdx) up = true;
    if(index > _historyIdx) up = false;
    if(up){
-      if(_historyIdx == 0){
+      if(_historyIdx == 0){ // at the top
          mybeep();
       }
       else if(!_tempCmdStored && _historyIdx==buttom){
@@ -269,7 +272,7 @@ CmdParser::moveToHistory(int index)
             s1.append(s, first, last-first+1);
             _history.push_back(s1);
          }
-         _historyIdx = _history.size();
+         // _historyIdx = _history.size();
          _tempCmdStored = true;
          if(index < 0) index = 0;
          _historyIdx = index;
@@ -293,7 +296,7 @@ CmdParser::moveToHistory(int index)
             s1.append(s, first, last-first+1);
             _history.push_back(s1);
          }
-         _historyIdx = _history.size();
+         // _historyIdx = _history.size();
          _tempCmdStored = true;
          if(index < 0) index = 0;
          _historyIdx = index;

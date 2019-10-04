@@ -188,7 +188,7 @@ CmdParser::insertChar(char ch, int repeat)
       for(int i = 0;i < count;i++)
          buffer[i] = *(_readBufPtr+i);
       *_readBufPtr = ch;
-      for (int i = 0; i < count; i++) 
+      for (int i = 0; i < count; i++)
          *(_readBufPtr + i + 1) = buffer[i];
       for (int i = 0; i <= count; i++)
          cout << *(_readBufPtr + i);

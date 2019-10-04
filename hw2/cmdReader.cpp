@@ -260,18 +260,7 @@ CmdParser::moveToHistory(int index)
       }
       else if(!_tempCmdStored && _historyIdx==buttom){
          string s(_readBuf);
-         string ss = s;
-         ss.erase(remove(ss.begin(), ss.end(), ' '), ss.end());
-         if(s.empty()||ss.empty()) {
-            _history.push_back(s);
-         }
-         else {
-            int first = s.find_first_not_of(' ');
-            int last = s.find_last_not_of(' ');
-            string s1 = "";
-            s1.append(s, first, last-first+1);
-            _history.push_back(s1);
-         }
+         _history.push_back(s);
          // _historyIdx = _history.size();
          _tempCmdStored = true;
          if(index < 0) index = 0;
@@ -284,18 +273,7 @@ CmdParser::moveToHistory(int index)
             _tempCmdStored = false;
          }
          string s(_readBuf);
-         string ss = s;
-         ss.erase(remove(ss.begin(), ss.end(), ' '), ss.end());
-         if(s.empty()||ss.empty()) {
-            _history.push_back(s);
-         }
-         else {
-            int first = s.find_first_not_of(' ');
-            int last = s.find_last_not_of(' ');
-            string s1;
-            s1.append(s, first, last-first+1);
-            _history.push_back(s1);
-         }
+         _history.push_back(s);
          // _historyIdx = _history.size();
          _tempCmdStored = true;
          if(index < 0) index = 0;

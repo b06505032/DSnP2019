@@ -42,8 +42,9 @@ HelpCmd::exec(const string& option)
       if (!e) return CmdExec::errorOption(CMD_OPT_ILLEGAL, token);
       e->usage(cout);
    }
-   else
+   else {
       cmdMgr->printHelps();
+   }
    return CMD_EXEC_DONE;
 }
 

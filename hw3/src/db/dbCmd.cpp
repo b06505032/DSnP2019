@@ -20,6 +20,19 @@ bool
 initDbCmd()
 {
    // TODO...
+   if (!(cmdMgr->regCmd("DBAPpend", 4, new DBAppendCmd) &&
+         cmdMgr->regCmd("DBAVerage", 4, new DBAveCmd) &&
+         cmdMgr->regCmd("DBCount", 3, new DBCountCmd) &&
+         cmdMgr->regCmd("DBMAx", 4, new DBMaxCmd) &&
+         cmdMgr->regCmd("DBMIn", 4, new DBMinCmd) &&
+         cmdMgr->regCmd("DBPrint", 3, new DBPrintCmd) &&
+         cmdMgr->regCmd("DBRead", 3, new DBReadCmd) &&
+         cmdMgr->regCmd("DBSOrt", 4, new DBSortCmd) &&
+         cmdMgr->regCmd("DBSUm", 4, new DBSumCmd) 
+      )) {
+      cerr << "Registering \"init\" db commands fails... exiting" << endl;
+      return false;
+   }
    return true;
 }
 
@@ -31,6 +44,7 @@ DBAppendCmd::exec(const string& option)
 {
    // TODO...
    // check option
+   
 
    return CMD_EXEC_DONE;
 }
@@ -198,7 +212,15 @@ CmdExecStatus
 DBPrintCmd::exec(const string& option)
 {  
    // TODO...
-
+   if (!dbjson)
+   {
+      cerr << "Error: DB is not created yet!!" << endl;
+      return CMD_EXEC_ERROR;
+   }
+   else{
+      cout << dbjson;
+      cout << "Total JSON elements: " << dbjson.size() << endl;
+   }
    return CMD_EXEC_DONE;
 }
 

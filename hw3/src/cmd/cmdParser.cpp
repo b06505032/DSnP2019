@@ -98,6 +98,9 @@ void
 CmdParser::printHelps() const
 {
    // TODO...
+   for (CmdMap::const_iterator i = _cmdMap.begin(), n = _cmdMap.end(); i != n; i++)
+      i->second->help();
+   cout << endl;
 }
 
 void
@@ -139,6 +142,19 @@ CmdParser::parseCmd(string& option)
    string str = _history.back();
 
    // TODO...
+   string cmd;
+   int firstspace = str.find_first_of(' ');
+   if(firstspace == string::npos) // if there is no any ' '
+      cmd = str;
+   else {
+      cmd = str.substr(0,firstspace); // get the first word of str
+      option = str.substr(firstspace+1,str.length()); // the second and beyond
+   }
+   CmdExec *e = getCmd(cmd);
+   if(e == 0)
+      cerr << "Illegal command!! (" << cmd << ")\n";
+   else
+      return e;
    assert(str[0] != 0 && str[0] != ' ');
    return NULL;
 }
@@ -312,6 +328,10 @@ CmdParser::getCmd(string cmd)
 {
    CmdExec* e = 0;
    // TODO...
+   for (CmdMap::const_iterator i = _cmdMap.begin(), n = _cmdMap.end(); i != n; i++){
+      if(myStrNCmp((i->first) + i->second->getOptCmd(), cmd, i->first.size()) == 0)
+         e = i->second;
+   }
    return e;
 }
 

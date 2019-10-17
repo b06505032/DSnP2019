@@ -93,6 +93,7 @@ istream &operator>>(istream &is, DBJson &j)
    return is;
 }
 
+// print all the json element
 ostream &operator<<(ostream &os, const DBJson &j)
 {
    // TODO

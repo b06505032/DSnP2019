@@ -149,9 +149,15 @@ CmdParser::parseCmd(string& option)
    else {
       cmd = str.substr(0,firstspace); // get the first word of str
       option = str.substr(firstspace+1,str.length()); // the second and beyond
+      int first = option.find_first_not_of(' ');
+      int last = option.find_last_not_of(' ');
+      option = option.substr(first, last-first+1);
+      // string s1;
+      // s1.append(option, first, last-first+1);
+      // option=s1;
    }
    CmdExec *e = getCmd(cmd);
-   if(e == 0)
+   if(e == 0) // when cmd is illegal
       cerr << "Illegal command!! (" << cmd << ")\n";
    else
       return e;
@@ -409,10 +415,10 @@ CmdExec::errorOption(CmdOptionError err, const string& opt) const
          if (opt.size()) cerr << " after (" << opt << ")";
          cerr << "!!" << endl;
       break;
-      case CMD_OPT_EXTRA:
+      case CMD_OPT_EXTRA: // ex: dbmax hello
          cerr << "Error: Extra option!! (" << opt << ")" << endl;
       break;
-      case CMD_OPT_ILLEGAL:
+      case CMD_OPT_ILLEGAL: // ex: help hi
          cerr << "Error: Illegal option!! (" << opt << ")" << endl;
       break;
       case CMD_OPT_FOPEN_FAIL:

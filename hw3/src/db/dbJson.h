@@ -59,7 +59,6 @@ public:
    // TODO modify these two functions according to the comments
    // return true if JSON file hasn't been read in
    bool operator !() { 
-      // return (!jsonread)? true:false;
       if (!jsonread) return true;
       else return false;
    }

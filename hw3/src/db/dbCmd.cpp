@@ -58,13 +58,10 @@ DBAppendCmd::exec(const string &option)
       return CmdExec::errorOption(CMD_OPT_MISSING, "");
 
    // for (int i = 0; i != options.size(); i++)
-      // cout << "options[" << i << "] " << options[i] << endl;
-   
-   if (options.size() == 1)
-   {
-      cerr << "Error: Missing option!!";
-      return CMD_EXEC_ERROR;
-   }
+   // cout << "options[" << i << "] " << options[i] << endl;
+
+   else if (options.size() == 1)
+      return CmdExec::errorOption(CMD_OPT_MISSING, "");
    else if (options.size() == 2)
    {
       bool samekey = false;
@@ -78,6 +75,8 @@ DBAppendCmd::exec(const string &option)
       }
       if (samekey)
       {
+         cerr << "Error: Element with key " << options[0] << " already exists!!";
+         return CMD_EXEC_ERROR;
       }
       else
       {
@@ -90,21 +89,46 @@ DBAppendCmd::exec(const string &option)
             else
                AllisNum = false;
          }
-         if(AllisNum){
-            stringstream iss (options[1]);
+         if (AllisNum)
+         {
+            stringstream iss(options[1]);
             int number;
             iss >> number;
             DBJsonElem jsonelem(options[0], number);
             dbjson.add(jsonelem);
+            return CMD_EXEC_DONE;
+         }
+         else
+         {
+            if (options[1][0] == '-')
+            {
+               bool AllisNum2 = true;
+               for (vector<string>::size_type i = 0; i < options[1].substr(1,options[1].size()-1).size(); i++)
+               {
+                  int tmp = (int)(options[1].substr(1,options[1].size()-1)[i]);
+                  if (tmp >= 48 && tmp <= 57)
+                     continue;
+                  else
+                     AllisNum2 = false;
+               }
+               if(AllisNum2){
+                  stringstream iss(options[1]);
+                  int number;
+                  iss >> number;
+                  DBJsonElem jsonelem(options[0], number);
+                  dbjson.add(jsonelem);
+                  return CMD_EXEC_DONE;
+               }
+               else
+                  return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[1]);
+            }
+            else
+               return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[1]);
          }
       }
    }
    else
-   {
       return CmdExec::errorOption(CMD_OPT_EXTRA, options[2]);
-   }
-
-   return CMD_EXEC_DONE;
 }
 
 void DBAppendCmd::usage(ostream &os) const

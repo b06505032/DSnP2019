@@ -64,6 +64,11 @@ DBAppendCmd::exec(const string &option)
       return CmdExec::errorOption(CMD_OPT_MISSING, "");
    else if (options.size() == 2)
    {
+      int value;
+      if (!isValidVarName(options[0]))
+         return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[0]);
+      if (!myStr2Int(options[1], value))
+         return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[1]);
       bool samekey = false;
       for (int i = 0; i != dbjson.size(); i++)
       {
@@ -80,51 +85,9 @@ DBAppendCmd::exec(const string &option)
       }
       else
       {
-         bool AllisNum = true;
-         for (vector<string>::size_type i = 0; i < options[1].size(); i++)
-         {
-            int tmp = (int)options[1][i];
-            if (tmp >= 48 && tmp <= 57)
-               continue;
-            else
-               AllisNum = false;
-         }
-         if (AllisNum)
-         {
-            stringstream iss(options[1]);
-            int number;
-            iss >> number;
-            DBJsonElem jsonelem(options[0], number);
-            dbjson.add(jsonelem);
-            return CMD_EXEC_DONE;
-         }
-         else
-         {
-            if (options[1][0] == '-')
-            {
-               bool AllisNum2 = true;
-               for (vector<string>::size_type i = 0; i < options[1].substr(1,options[1].size()-1).size(); i++)
-               {
-                  int tmp = (int)(options[1].substr(1,options[1].size()-1)[i]);
-                  if (tmp >= 48 && tmp <= 57)
-                     continue;
-                  else
-                     AllisNum2 = false;
-               }
-               if(AllisNum2){
-                  stringstream iss(options[1]);
-                  int number;
-                  iss >> number;
-                  DBJsonElem jsonelem(options[0], number);
-                  dbjson.add(jsonelem);
-                  return CMD_EXEC_DONE;
-               }
-               else
-                  return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[1]);
-            }
-            else
-               return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[1]);
-         }
+         DBJsonElem jsonelem(options[0], value);
+         dbjson.add(jsonelem);
+         return CMD_EXEC_DONE;
       }
    }
    else
@@ -337,7 +300,7 @@ DBPrintCmd::exec(const string &option)
          }
          else
          {
-            cerr << "Error: No JSON element with key " << findkey << " is found." << endl;
+            cerr << "Error: No JSON element with key \"" << findkey << "\" is found." << endl;
             return CMD_EXEC_ERROR;
          }
       }

@@ -1,0 +1,105 @@
+mydb> dbr ../tests/test1.json
+Error: "../tests/test1.json" does not exist!!
+
+mydb> dbp
+Error: DB is not created yet!!
+
+mydb> dbap Mary 30
+Error: DB is not created yet!!
+
+mydb> dbap Mary 30
+Error: DB is not created yet!!
+
+mydb> dbap
+Error: DB is not created yet!!
+
+mydb> dbap Larry
+Error: DB is not created yet!!
+
+mydb> dbap Larry 80 Hello
+Error: DB is not created yet!!
+
+mydb> dbap Larry XX
+Error: DB is not created yet!!
+
+mydb> dbap Larry 80
+Error: DB is not created yet!!
+
+mydb> dbp
+Error: DB is not created yet!!
+
+mydb> dbp Ric
+Error: DB is not created yet!!
+
+mydb> dbp ric
+Error: DB is not created yet!!
+
+mydb> dbav
+Error: The average of the DB is nan.
+
+mydb> dbc
+There is no JSON element in DB.
+
+mydb> dbap Ben -50
+Error: DB is not created yet!!
+
+mydb> dbp
+Error: DB is not created yet!!
+
+mydb> dbma
+Error: The max JSON element is nan.
+
+mydb> dbmi
+Error: The min JSON element is nan.
+
+mydb> dbsort -v
+
+mydb> dbp
+Error: DB is not created yet!!
+
+mydb> dbsort -v
+
+mydb> dbp
+Error: DB is not created yet!!
+
+mydb> dbsort -k
+
+mydb> dbp
+Error: DB is not created yet!!
+
+mydb> dbsort -v
+
+mydb> dbp
+Error: DB is not created yet!!
+
+mydb> dbsort -k
+
+mydb> dbp
+Error: DB is not created yet!!
+
+mydb> dbsum
+Error: The sum of the DB is nan.
+
+mydb> 
+mydb> 
+mydb> 
+mydb> 
+mydb> 
+mydb> 
+mydb> 
+mydb> 
+mydb> 
+mydb> 
+mydb> 
+mydb> 
+mydb> 
+mydb> 
+mydb> 
+mydb> 
+mydb> 
+mydb> 
+mydb> 
+mydb> 
+mydb> 
+mydb> 
+mydb> 

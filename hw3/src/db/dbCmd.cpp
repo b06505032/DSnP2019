@@ -11,6 +11,7 @@
 #include <cmath>
 #include <algorithm>
 #include <string>
+#include <sstream>
 #include "util.h"
 #include "dbCmd.h"
 #include "dbJson.h"
@@ -45,6 +46,63 @@ DBAppendCmd::exec(const string &option)
 {
    // TODO...
    // check option
+   if (!dbjson)
+   {
+      cerr << "Error: DB is not created yet!!" << endl;
+      return CMD_EXEC_ERROR;
+   }
+   vector<string> options;
+   if (!CmdExec::lexOptions(option, options))
+      return CMD_EXEC_ERROR;
+   if (options.empty())
+      return CmdExec::errorOption(CMD_OPT_MISSING, "");
+
+   // for (int i = 0; i != options.size(); i++)
+      // cout << "options[" << i << "] " << options[i] << endl;
+   
+   if (options.size() == 1)
+   {
+      cerr << "Error: Missing option!!";
+      return CMD_EXEC_ERROR;
+   }
+   else if (options.size() == 2)
+   {
+      bool samekey = false;
+      for (int i = 0; i != dbjson.size(); i++)
+      {
+         if (options[0] == dbjson[i].key())
+         {
+            samekey = true;
+            break;
+         }
+      }
+      if (samekey)
+      {
+      }
+      else
+      {
+         bool AllisNum = true;
+         for (vector<string>::size_type i = 0; i < options[1].size(); i++)
+         {
+            int tmp = (int)options[1][i];
+            if (tmp >= 48 && tmp <= 57)
+               continue;
+            else
+               AllisNum = false;
+         }
+         if(AllisNum){
+            stringstream iss (options[1]);
+            int number;
+            iss >> number;
+            DBJsonElem jsonelem(options[0], number);
+            dbjson.add(jsonelem);
+         }
+      }
+   }
+   else
+   {
+      return CmdExec::errorOption(CMD_OPT_EXTRA, options[2]);
+   }
 
    return CMD_EXEC_DONE;
 }
@@ -205,56 +263,65 @@ DBPrintCmd::exec(const string &option)
       cerr << "Error: DB is not created yet!!" << endl;
       return CMD_EXEC_ERROR;
    }
+
+   bool option_is_all_space = true;
+   for (int i = 0; i != option.size(); i++)
+   {
+      if (option[i] != ' ')
+      {
+         option_is_all_space = false;
+         break;
+      }
+   }
+   if (option_is_all_space)
+   {
+      cout << dbjson;
+      cout << "Total JSON elements: " << dbjson.size() << endl;
+      return CMD_EXEC_DONE;
+   }
    else
    {
-      bool option_is_all_space = true;
-      for (int i = 0; i != option.size(); i++)
+      string option_ = option;
+      int firstspace = option_.find_first_of(' ');
+      string findkey;
+      string remainword;
+      bool found = false;
+      // parse the ket and remain
+      if (firstspace == string::npos)
+         findkey = option_;
+      else
       {
-         if (option[i] != ' ')
-         {
-            option_is_all_space = false;
-            break;
-         }
+         findkey = option_.substr(0, firstspace);                   // get the first word and find key
+         remainword = option_.substr(firstspace, option_.length()); // the second and beyond
       }
-      if (option_is_all_space)
-      {
-         cout << dbjson;
-         cout << "Total JSON elements: " << dbjson.size() << endl;
+
+      if (remainword.find_first_not_of(' ') == string::npos)
+      { // if there is no remain word, then find the key
+         int j;
+         for (int i = 0; i != dbjson.size(); i++)
+         {
+            if (findkey == dbjson[i].key())
+            {
+               found = true;
+               j = i;
+            }
+         }
+         if (found)
+         {
+            cout << "{ " << dbjson[j] << " }" << endl;
+            return CMD_EXEC_DONE;
+         }
+         else
+         {
+            cerr << "Error: No JSON element with key " << findkey << " is found." << endl;
+            return CMD_EXEC_ERROR;
+         }
       }
       else
       {
-         string option_ = option;
-         int firstspace = option_.find_first_of(' ');
-         string findkey;
-         string remainword;
-         bool found = false;
-         // parse the ket and remain
-         if (firstspace == string::npos)
-            findkey = option_;
-         else
-         {
-            findkey = option_.substr(0, firstspace);                   // get the first word and find key
-            remainword = option_.substr(firstspace, option_.length()); // the second and beyond
-         }
-         
-         if (remainword.find_first_not_of(' ') == string::npos){ // if there is no remain word, then find the key
-            int j;
-            for(int i=0; i!=dbjson.size();i++){
-               if(findkey==dbjson[i].key()){
-                  found = true;
-                  j=i;
-               }  
-            }
-            if(found)
-               cout<<"{ "<<dbjson[j]<<" }"<<endl;
-            else
-               cerr<< "Error: No JSON element with key "<<findkey<<" is found."<<endl;
-         }
-         else
-            errorOption(CMD_OPT_EXTRA, remainword);
+         return CmdExec::errorOption(CMD_OPT_EXTRA, remainword);
       }
    }
-   return CMD_EXEC_DONE;
 }
 
 void DBPrintCmd::usage(ostream &os) const

@@ -152,9 +152,6 @@ CmdParser::parseCmd(string& option)
       int first = option.find_first_not_of(' ');
       int last = option.find_last_not_of(' ');
       option = option.substr(first, last-first+1);
-      // string s1;
-      // s1.append(option, first, last-first+1);
-      // option=s1;
    }
    CmdExec *e = getCmd(cmd);
    if(e == 0) // when cmd is illegal

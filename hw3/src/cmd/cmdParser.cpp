@@ -30,9 +30,7 @@ bool CmdParser::openDofile(const string &dof)
    _dofileStack.push(_dofile);
    _dofile = new ifstream(dof.c_str());
    if (_dofileStack.size() > 1024)
-   {
       return false;
-   }
    else if (!_dofile->is_open())
    {
       _dofile = _dofileStack.top();
@@ -55,9 +53,7 @@ void CmdParser::closeDofile()
       _dofileStack.pop();
    }
    else
-   {
       _dofile = 0;
-   }
 }
 
 // Return false if registration fails

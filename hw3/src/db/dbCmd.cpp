@@ -65,27 +65,20 @@ DBAppendCmd::exec(const string &option)
    else if (options.size() == 2)
    {
       int value;
-      if (!isValidVarName(options[0]))
+      if (!isValidVarName(options[0])) // if it is illegal key
          return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[0]);
-      if (!myStr2Int(options[1], value))
+      if (!myStr2Int(options[1], value)) // if it is illegal value
          return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[1]);
-      bool samekey = false;
-      for (int i = 0; i != dbjson.size(); i++)
+      
+      DBJsonElem jsonelem(options[0], value);
+      
+      if (!(dbjson.add(jsonelem))) // if the key already exist
       {
-         if (options[0] == dbjson[i].key())
-         {
-            samekey = true;
-            break;
-         }
-      }
-      if (samekey)
-      {
-         cerr << "Error: Element with key " << options[0] << " already exists!!";
+         cerr << "Error: Element with key \"" << options[0] << "\" already exists!!" << endl;
          return CMD_EXEC_ERROR;
       }
       else
       {
-         DBJsonElem jsonelem(options[0], value);
          dbjson.add(jsonelem);
          return CMD_EXEC_DONE;
       }

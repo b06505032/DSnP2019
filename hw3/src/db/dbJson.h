@@ -62,7 +62,7 @@ public:
       if (!jsonread) return true;
       else return false;
    }
-   // return this if JSON file has been read in; return NLL if not.
+   // return this if JSON file has been read in; return NULL if not.
    operator void* () const {
       if(jsonread) return const_cast<DBJson *>(this); 
       else return NULL;

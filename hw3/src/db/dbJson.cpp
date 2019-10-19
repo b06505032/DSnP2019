@@ -97,11 +97,16 @@ istream &operator>>(istream &is, DBJson &j)
 ostream &operator<<(ostream &os, const DBJson &j)
 {
    // TODO
-   os << "{\n";
-   for (vector<string>::size_type i = 0; i != j.size() - 1; ++i)
-      os << "  " << j[i] << ",\n";
-   os << "  " << j._obj.back() << endl;
-   os << "}\n";
+   if (!j._obj.empty())
+   {
+      os << "{\n";
+      for (vector<string>::size_type i = 0; i != j.size() - 1; ++i)
+         os << "  " << j[i] << ",\n";
+      os << "  " << j._obj.back() << endl;
+      os << "}\n";
+   }
+   else
+      os << "{" << endl << "}" << endl;
    return os;
 }
 
@@ -122,6 +127,18 @@ void DBJson::reset()
 bool DBJson::add(const DBJsonElem &elm)
 {
    // TODO
+   bool samekey = false;
+   for (int i = 0; i != (*this).size(); i++)
+   {
+      if (elm.key() == (*this)[i].key())
+      {
+         samekey = true;
+         break;
+      }
+   }
+   if (samekey)
+      return false;
+
    _obj.push_back(elm);
    return true;
 }

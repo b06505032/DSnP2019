@@ -47,11 +47,11 @@ private:                                                                    \
 //
 // To promote 't' to the nearest multiple of SIZE_T; 
 // e.g. Let SIZE_T = 8;  toSizeT(7) = 8, toSizeT(12) = 16
-#define toSizeT(t)      0  // TODO
+#define toSizeT(t)      (t % SIZE_T) == 0 ? t : SIZE_T + (SIZE_T * (t / SIZE_T))  // TODO
 //
 // To demote 't' to the nearest multiple of SIZE_T
 // e.g. Let SIZE_T = 8;  downtoSizeT(9) = 8, downtoSizeT(100) = 96
-#define downtoSizeT(t)  0  // TODO
+#define downtoSizeT(t)  SIZE_T * (t / SIZE_T)  // TODO
 
 // R_SIZE is the size of the recycle list
 #define R_SIZE 256
@@ -89,6 +89,11 @@ class MemBlock
    // 4. Return false if not enough memory
    bool getMem(size_t t, T*& ret) {
       // TODO
+      t = toSizeT(t);
+      if (getRemainSize() < t)
+         return false;
+      ret = (T *)_ptr;
+      _ptr += t;
       return true;
    }
    size_t getRemainSize() const { return size_t(_end - _ptr); }
@@ -289,7 +294,13 @@ private:
       //    cerr << "Requested memory (" << t << ") is greater than block size"
       //         << "(" << _blockSize << "). " << "Exception raised...\n";
       // TODO
-
+      if (t > _blockSize)
+      {
+         cerr << "Requested memory (" << t << ") is greater than block size"
+              << "(" << _blockSize << "). "
+              << "Exception raised...\n";
+         throw bad_alloc();
+      }
       // 3. Check the _recycleList first...
       //    Print this message for memTest.debug
       //    #ifdef MEM_DEBUG

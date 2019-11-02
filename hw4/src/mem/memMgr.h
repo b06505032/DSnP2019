@@ -47,7 +47,7 @@ private:                                                                    \
 //
 // To promote 't' to the nearest multiple of SIZE_T; 
 // e.g. Let SIZE_T = 8;  toSizeT(7) = 8, toSizeT(12) = 16
-#define toSizeT(t)      (t % SIZE_T) == 0 ? t : SIZE_T + (SIZE_T * (t / SIZE_T))  // TODO
+#define toSizeT(t)      (t % SIZE_T) == 0 ? t : SIZE_T * (1 + (t / SIZE_T))  // TODO
 //
 // To demote 't' to the nearest multiple of SIZE_T
 // e.g. Let SIZE_T = 8;  downtoSizeT(9) = 8, downtoSizeT(100) = 96
@@ -196,6 +196,26 @@ public:
       cout << "Resetting memMgr...(" << b << ")" << endl;
       #endif // MEM_DEBUG
       // TODO
+      while(_activeBlock -> _nextBlock != 0)
+	   {
+		   MemBlock<T>* tempBlock = _activeBlock;
+		   _activeBlock = _activeBlock -> _nextBlock;
+		   delete tempBlock;
+	   }
+      _activeBlock -> reset();
+      _activeBlock -> _nextBlock = NULL;
+      // 2. reset _recycleList[]
+      for (int i = 0; i < R_SIZE; ++i)
+         _recycleList[i].reset();
+      // 3. 'b' is the new _blockSize;
+      if(b != 0)
+      {
+         _blockSize = b;
+         delete _activeBlock;
+         _activeBlock = new MemBlock<T>(0,b);
+      }
+      else
+         _activeBlock->reset();
    }
    // Called by new
    T* alloc(size_t t) {

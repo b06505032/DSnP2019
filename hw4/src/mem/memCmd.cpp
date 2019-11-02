@@ -81,7 +81,17 @@ MTNewCmd::exec(const string &option)
    vector<string> options;
    if (!lexOptions(option, options))
       return CmdExec::errorOption(CMD_OPT_MISSING, "");
-
+   bool isarray = false;
+   int array_pos;
+   for (size_t i = 0, n = options.size(); i < n; ++i)
+   {
+      if (myStrNCmp("-Array", options[i], 2) == 0)
+      {
+         isarray = true;
+         array_pos = i;
+         break;
+      }
+   }
    if (options.empty())
       return CmdExec::errorOption(CMD_OPT_MISSING, "");
    else if (options.size() > 3)
@@ -109,50 +119,39 @@ MTNewCmd::exec(const string &option)
    }
    else if (options.size() == 2)
    {
-      bool isarray = false;
-      int array_pos;
-      for (size_t i = 0, n = options.size(); i < n; ++i)
+      if (!isarray) // if "-array" doesn't exist
       {
-         if (myStrNCmp("-Array", options[i], 2) == 0)
-         {
-            isarray = true;
-            array_pos = i;
-            break;
-         }
-      }
-      if (!isarray)
-      { // if "-array" doesn't exist
-         if (!myStr2Int(options[0], num_obj))
+         if (!myStr2Int(options[0], num_obj))  // mtn <non-number> <...>
             return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[0]);
-         else
+         else // mtn <number> <extra>
          {
             return CmdExec::errorOption(CMD_OPT_EXTRA, options[1]);
          }
       }
       else
       { // if "-array" exist
-         if (array_pos == 0)
-         { // options[0] is "-array"
-            if (myStr2Int(options[1], num_obj))
-            {                    // check options[1]
-               if (num_obj <= 0) // mtn -a 0, -123
+         if (array_pos == 0) // options[0] is "-array"
+         { 
+            if (myStr2Int(options[1], num_obj)) // mtn -a <number>
+            {
+               if (num_obj <= 0) 
                   return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[1]);
                else
                   return CmdExec::errorOption(CMD_OPT_MISSING, "");
             }
-            else // mtn -a dasf
+            else // mtn -a <non-number>
                return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[1]);
          }
-         else
-         { // options[1] is "-array"
-            if (myStr2Int(options[0], num_obj))
-            { // check options[0]
-               if (num_obj <= 0)
+         else // options[1] is "-array"
+         { 
+            if (myStr2Int(options[0], num_obj)) // mtn <number> -a
+            { 
+               if (num_obj <= 0) // mtn <illegal-number> -a
                   return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[0]);
-               else
+               else // mtn <number> -a --> missing!
                   return CmdExec::errorOption(CMD_OPT_MISSING, options[1]);
             }
-            else
+            else // mtn <non-number> -a
                return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[0]);
          }
       }
@@ -287,6 +286,105 @@ CmdExecStatus
 MTDeleteCmd::exec(const string &option)
 {
    // TODO
+   bool index = false;
+   bool random = false;
+   bool array = false;
+   int index_pos;
+   int random_pos;
+   int array_pos;
+   int num;
+   int num_random;
+   vector<string> options;
+   if (!lexOptions(option, options))
+      return CmdExec::errorOption(CMD_OPT_MISSING, "");
+
+   if (options.empty())
+   {
+      return CmdExec::errorOption(CMD_OPT_MISSING, "");
+   }
+
+   for (size_t i = 0; i < options.size(); ++i)
+   {
+      if (myStrNCmp("-Index", options[i], 2) == 0)
+      {
+         index = true;
+         index_pos = i;
+         break;
+      }
+   }
+   for (size_t i = 0; i < options.size(); ++i)
+   {
+      if (myStrNCmp("-Random", options[i], 2) == 0)
+      {
+         random = true;
+         random_pos = i;
+         break;
+      }
+   }
+   for (size_t i = 0; i < options.size(); ++i)
+   {
+      if (myStrNCmp("-Array", options[i], 2) == 0)
+      {
+         array = true;
+         array_pos = i;
+         break;
+      }
+   }
+   if(!index&&!random&&!array) // if none of -Index -Random -Array exist
+      return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[0]);
+   if (options.size() == 1)
+   {
+      if (random || index) // if options[0] is -Index or -Array
+         return CmdExec::errorOption(CMD_OPT_MISSING, options[0]);
+      else
+         return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[0]);
+   }
+   else if (options.size() == 2)
+   {
+      // CHECK: options[0] must be "-Random" or "-Index"
+      if (myStrNCmp("-Random", options[0], 2) == 0)
+      {
+         if (myStr2Int(options[1], num_random))
+         { // check options[1]
+            if (num_random <= 0)
+               return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[1]);
+            else //legal mtd -r <number>
+            {
+               cout<<"delete! "<<options[random_pos]<<num_random<<endl;
+            }
+         }
+         else
+            return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[1]);
+      }
+      else if (index_pos==0)
+      {
+         if (myStr2Int(options[1], num))
+         { // check options[1]
+            if (num <= 0)
+               return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[1]);
+            else
+            {
+               if (mtest.getObjListSize() < num) {
+                  cerr << "Size of object list ("<<mtest.getObjListSize()<<") is <= " <<num<<"!!"<< endl;
+                  return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[1]);
+               } else {
+                  mtest.deleteObj(num);
+               }
+            }
+         }
+         else
+            return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[1]);
+      }
+      else
+         return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[0]);
+   }
+   else if (options.size() == 3)
+   {
+      
+   }
+   else
+   { // options.size() > 4
+   }
 
    return CMD_EXEC_DONE;
 }

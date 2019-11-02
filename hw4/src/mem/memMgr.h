@@ -127,16 +127,25 @@ class MemRecycleList
    // pop out the first element in the recycle list
    T* popFront() {
       // TODO
-      return 0;
+      if (!_first) return 0;
+      T* tmp = _first;
+      _first = (T*)(*(size_t*)_first);
+      return tmp;
    }
    // push the element 'p' to the beginning of the recycle list
    void  pushFront(T* p) {
       // TODO
+      *(size_t*)p = (size_t)_first;
+      _first = p;
    }
    // Release the memory occupied by the recycle list(s)
    // DO NOT release the memory occupied by MemMgr/MemBlock
    void reset() {
       // TODO
+      if (_nextList != NULL)
+         delete _nextList;
+      _first = 0;
+      _nextList = 0;
    }
 
    // Helper functions
@@ -144,7 +153,13 @@ class MemRecycleList
    // count the number of elements in the recycle list
    size_t numElm() const {
       // TODO
-      return 0;
+      size_t count = 0;
+      T* tmp = _first;
+      while(tmp){
+         tmp = (T*)(*(size_t*)tmp);
+         count++;
+      }
+      return count;
    }
 
    // Data members
@@ -264,7 +279,7 @@ private:
       assert(t % SIZE_T == 0);
       assert(t >= S);
       // TODO
-      return 0;
+      return (t-SIZE_T)/S; // (t-8)/84
    }
    // Go through _recycleList[m], its _nextList, and _nexList->_nextList, etc,
    //    to find a recycle list whose "_arrSize" == "n"
@@ -277,7 +292,16 @@ private:
    MemRecycleList<T>* getMemRecycleList(size_t n) {
       size_t m = n % R_SIZE;
       // TODO
-      return 0;
+      MemRecycleList<T>* tmp = &(_recycleList[m]);
+      if (tmp->getArrSize() == n)
+         return tmp;
+      while(tmp->getNextList()!= NULL) { // if nextlist exist, go through nextlist
+         tmp = tmp->_nextList;
+         if (tmp->getArrSize() == n)
+            return tmp;
+      }
+      tmp->setNextList(new MemRecycleList<T>(n));
+      return tmp->getNextList();
    }
    // t is the #Bytes requested from new or new[]
    // Note: Make sure the returned memory is a multiple of SIZE_T
@@ -310,7 +334,10 @@ private:
       //    => "ret" is the return address
       size_t n = getArraySize(t);
       // TODO
-
+      #ifdef MEM_DEBUG
+      cout << "Recycled from _recycleList[" << n << "]..." << ret << endl;
+      #endif // MEM_DEBUG
+      MemRecycleList<T>* tmp = getMemRecycleList(n);
       // If no match from recycle list...
       // 4. Get the memory from _activeBlock
       // 5. If not enough, recycle the remained memory and print out ---
@@ -325,7 +352,36 @@ private:
       //    cout << "New MemBlock... " << _activeBlock << endl;
       //    #endif // MEM_DEBUG
       // TODO
-
+      if (tmp->_first!=0) {
+         ret = tmp->popFront();
+         #ifdef MEM_DEBUG
+         cout << "Recycled from _recycleList[" << n << "]..." << ret << endl;
+         #endif // MEM_DEBUG
+      }
+      else {
+         if(_activeBlock->getMem(t, ret)){
+            return ret;
+         }
+         else
+         {
+            size_t rmSize = _activeBlock->getRemainSize();
+            size_t rn = getArraySize(rmSize);
+            if (rmSize < S) {
+               _activeBlock = new MemBlock<T>(_activeBlock, _blockSize);
+               _activeBlock->getMem(t, ret);
+               #ifdef MEM_DEBUG
+               cout << "New MemBlock... " << _activeBlock << endl;
+               #endif // MEM_DEBUG
+            }
+            else{
+               getMemRecycleList(rn)->pushFront(ret);
+               #ifdef MEM_DEBUG
+               cout << "Recycling " << ret << " to _recycleList[" << rn << "]\n";
+               #endif // MEM_DEBUG
+            }
+            
+         }
+      }
       // 6. At the end, print out the acquired memory address
       #ifdef MEM_DEBUG
       cout << "Memory acquired... " << ret << endl;
@@ -335,7 +391,13 @@ private:
    // Get the currently allocated number of MemBlock's
    size_t getNumBlocks() const {
       // TODO
-      return 0;
+      size_t count = 1;
+      MemBlock<T> *tmpBlock = _activeBlock;
+      while(tmpBlock->_nextBlock!= NULL) { // if nextblock exist, go through nextlist
+         tmpBlock = tmpBlock->_nextBlock;
+         count++;
+      }
+      return count;
    }
 
 };

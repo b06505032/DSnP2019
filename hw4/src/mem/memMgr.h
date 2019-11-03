@@ -89,10 +89,10 @@ class MemBlock
    // 4. Return false if not enough memory
    bool getMem(size_t t, T*& ret) {
       // TODO
-      t = toSizeT(t);
+      // t = toSizeT(t);
+      ret = (T *)_ptr;
       if (getRemainSize() < t)
          return false;
-      ret = (T *)_ptr;
       _ptr += t;
       return true;
    }
@@ -249,6 +249,7 @@ public:
       // Get the array size 'n' stored by system,
       // which is also the _recycleList index
       size_t n = 0;
+      n = *(size_t *)p;
       #ifdef MEM_DEBUG
       cout << ">> Array size = " << n << endl;
       cout << "Recycling " << p << " to _recycleList[" << n << "]" << endl;
@@ -379,14 +380,10 @@ private:
          #endif // MEM_DEBUG
       }
       else {
-         if(_activeBlock->getMem(t, ret)){
-            return ret;
-         }
-         else
+         if(!_activeBlock->getMem(t, ret))   
          {
             size_t rmSize = _activeBlock->getRemainSize();
-            size_t rn = getArraySize(rmSize);
-            if (rmSize < S) {
+            if(rmSize < S){
                _activeBlock = new MemBlock<T>(_activeBlock, _blockSize);
                _activeBlock->getMem(t, ret);
                #ifdef MEM_DEBUG
@@ -394,12 +391,18 @@ private:
                #endif // MEM_DEBUG
             }
             else{
-               getMemRecycleList(rn)->pushFront(ret);
+               getMemRecycleList(getArraySize(rmSize))->pushFront(ret);
+               _activeBlock = new MemBlock<T>(_activeBlock, _blockSize);
+               _activeBlock->getMem(t, ret);
                #ifdef MEM_DEBUG
                cout << "Recycling " << ret << " to _recycleList[" << rn << "]\n";
                #endif // MEM_DEBUG
             }
-            
+            // if (rmSize >= S) {
+            //    getMemRecycleList(getArraySize(rmSize))->pushFront(ret);
+            // }               
+            // _activeBlock = new MemBlock<T>(_activeBlock, _blockSize);
+            // _activeBlock->getMem(t, ret);
          }
       }
       // 6. At the end, print out the acquired memory address
@@ -413,7 +416,8 @@ private:
       // TODO
       size_t count = 1;
       MemBlock<T> *tmpBlock = _activeBlock;
-      while(tmpBlock->_nextBlock!= NULL) { // if nextblock exist, go through nextlist
+      while(tmpBlock->_nextBlock!= NULL) // if nextblock exist, go through nextlist
+      {
          tmpBlock = tmpBlock->_nextBlock;
          count++;
       }

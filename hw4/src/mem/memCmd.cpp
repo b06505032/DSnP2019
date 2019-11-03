@@ -121,7 +121,7 @@ MTNewCmd::exec(const string &option)
    {
       if (!isarray) // if "-array" doesn't exist
       {
-         if (!myStr2Int(options[0], num_obj))  // mtn <non-number> <...>
+         if (!myStr2Int(options[0], num_obj)) // mtn <non-number> <...>
             return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[0]);
          else // mtn <number> <extra>
          {
@@ -129,12 +129,12 @@ MTNewCmd::exec(const string &option)
          }
       }
       else
-      { // if "-array" exist
+      {                      // if "-array" exist
          if (array_pos == 0) // options[0] is "-array"
-         { 
+         {
             if (myStr2Int(options[1], num_obj)) // mtn -a <number>
             {
-               if (num_obj <= 0) 
+               if (num_obj <= 0)
                   return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[1]);
                else
                   return CmdExec::errorOption(CMD_OPT_MISSING, "");
@@ -143,9 +143,9 @@ MTNewCmd::exec(const string &option)
                return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[1]);
          }
          else // options[1] is "-array"
-         { 
+         {
             if (myStr2Int(options[0], num_obj)) // mtn <number> -a
-            { 
+            {
                if (num_obj <= 0) // mtn <illegal-number> -a
                   return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[0]);
                else // mtn <number> -a --> missing!
@@ -330,7 +330,7 @@ MTDeleteCmd::exec(const string &option)
          break;
       }
    }
-   if(!index&&!random&&!array) // if none of -Index -Random -Array exist
+   if (!index && !random && !array) // if none of -Index -Random -Array exist
       return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[0]);
    if (options.size() == 1)
    {
@@ -342,32 +342,39 @@ MTDeleteCmd::exec(const string &option)
    else if (options.size() == 2)
    {
       // CHECK: options[0] must be "-Random" or "-Index"
-      if (random_pos==0)
+      if (random_pos == 0) // mtd -r <...>
       {
          if (myStr2Int(options[1], random_num))
-         { // check options[1]
+         {
             if (random_num <= 0)
                return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[1]);
             else //legal mtd -r <number>
             {
-               cout<<"delete! "<<options[random_pos]<<random_num<<endl;
+               for (int i = 0; i < random_num; i++)
+               {
+                  if (mtest.getObjListSize() > 0)
+                     mtest.deleteObj(rnGen(mtest.getObjListSize()));
+               }
             }
          }
          else
             return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[1]);
       }
-      else if (index_pos==0)
+      else if (index_pos == 0) // mtd -i <...>
       {
          if (myStr2Int(options[1], index_num))
-         { // check options[1]
+         {
             if (index_num <= 0)
                return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[1]);
-            else
+            else // legal mtd -i <number>
             {
-               if (mtest.getObjListSize() < index_num) {
-                  cerr << "Size of object list ("<<mtest.getObjListSize()<<") is <= " <<index_num<<"!!"<< endl;
+               if (mtest.getObjListSize() < index_num)
+               {
+                  cerr << "Size of object list (" << mtest.getObjListSize() << ") is <= " << index_num << "!!" << endl;
                   return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[1]);
-               } else {
+               }
+               else
+               {
                   mtest.deleteObj(index_num);
                }
             }
@@ -380,79 +387,146 @@ MTDeleteCmd::exec(const string &option)
    }
    else if (options.size() == 3)
    {
-      if(index_pos!=0&&random_pos!=0&&array_pos!=0)
+      if (index_pos != 0 && random_pos != 0 && array_pos != 0)
          return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[0]);
-      if(array){ // if -Array exist
-         if(array_pos==0){ // mtd -a <...> <...>
-            if(index_pos==1){ //mtd -a -i <...>
-               if (myStr2Int(options[2], index_num)){
+      if (array)
+      { // if -Array exist
+         if (array_pos == 0)
+         { // mtd -a <...> <...>
+            if (index_pos == 1) //mtd -a -i <...>
+            { 
+               if (myStr2Int(options[2], index_num))
+               {
                   if (index_num <= 0)
                      return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[2]);
-                  else{
-                     cout<<"delete array!!"<<endl;
+                  else
+                  {
+                     // cout << "delete array!!" << endl;
+                     if (mtest.getArrListSize() < index_num)
+                     {
+                        cerr << "Size of array list (" << mtest.getArrListSize() << ") is <= " << index_num << "!!" << endl;
+                        return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[1]);
+                     }
+                     else
+                     { // legal mtd -a -i <number>
+                        mtest.deleteArr(index_num);
+                     }
                   }
                }
-               else{
+               else
+               {
                   return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[2]);
                }
-            } else if(random_pos==1){ //mtd -a -r <...>
-               if (myStr2Int(options[2], random_num)){
+            }
+            else if (random_pos == 1)
+            { //mtd -a -r <...>
+               if (myStr2Int(options[2], random_num))
+               {
                   if (random_num <= 0)
                      return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[2]);
-                  else{
-                     cout<<"delete array!!"<<endl;
+                  else
+                  {
+                     cout << "delete array!!" << endl;
                   }
                }
-               else{
+               else
+               {
                   return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[2]);
                }
-            }else{
+            }
+            else
+            {
                return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[1]);
             }
          }
-         else if(array_pos==2) { // mtd <...> <...> -a
-            if(index_pos==0){ //mtd -i <...> -a
-               if (myStr2Int(options[1], index_num)){
+         else if (array_pos == 2)
+         { // mtd <...> <...> -a
+            if (index_pos == 0)
+            { //mtd -i <...> -a
+               if (myStr2Int(options[1], index_num))
+               {
                   if (index_num <= 0)
                      return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[1]);
-                  else{
-                     cout<<"delete array!!"<<endl;
+                  else
+                  {
+                     // cout << "delete array!!" << endl;
+                     if (mtest.getArrListSize() < index_num)
+                     {
+                        cerr << "Size of array list (" << mtest.getArrListSize() << ") is <= " << index_num << "!!" << endl;
+                        return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[1]);
+                     }
+                     else
+                     { // legal mtd -a -i <number>
+                        mtest.deleteArr(index_num);
+                     }
                   }
                }
-               else{
+               else
+               {
                   return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[1]);
                }
-            } else if(random_pos==0){ //mtd -r <...> -a
-               if (myStr2Int(options[1], random_num)){
+            }
+            else if (random_pos == 0)
+            { //mtd -r <...> -a
+               if (myStr2Int(options[1], random_num))
+               {
                   if (random_num <= 0)
                      return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[1]);
-                  else{
-                     cout<<"delete array!!"<<endl;
+                  else
+                  {
+                     cout << "delete array!!" << endl;
                   }
                }
-               else{
+               else
+               {
                   return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[1]);
                }
-            } else{ 
+            }
+            else
+            {
                return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[0]);
             }
          }
-         else { // mtd <...> -a <...>
-            if(index_pos==0||random_pos==0) { // mtd -i -a <...> or mtd -r -a <...>
+         else
+         { // mtd <...> -a <...>
+            if (index_pos == 0 || random_pos == 0)
+            { // mtd -i -a <...> or mtd -r -a <...>
                return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[1]);
             }
-            else { 
+            else
                return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[0]);
-            }
          }
       }
-      else{ // if array doesn't exist
-
+      else // if array doesn't exist
+      {
+         if (random_pos == 0) // mtd -r <...> <...>
+         {
+            if (myStr2Int(options[1], random_num))
+            {
+               if (index_num <= 0)
+                  return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[1]);
+               else
+                  return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[2]);
+            }
+            else
+               return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[1]);
+         }
+         else if (index_pos == 0) // mtd -i <...> <...>
+         {
+            if (myStr2Int(options[1], index_num))
+            {
+               if (index_num <= 0)
+                  return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[1]);
+               else
+                  return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[2]);
+            }
+            else
+               return CmdExec::errorOption(CMD_OPT_ILLEGAL, options[1]);
+         }
       }
    }
    else // options.size() > 4
-   { 
-
+   {
    }
 
    return CMD_EXEC_DONE;

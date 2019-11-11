@@ -58,25 +58,30 @@ public:
       // TODO: implement these overloaded operators
       const T& operator * () const { return _node->_data; }
       T& operator * () { return _node->_data; }
-      iterator& operator ++ () { return *(this); }
-      iterator operator ++ (int) { return *(this); }
-      iterator& operator -- () { return *(this); }
-      iterator operator -- (int) { return *(this); }
+      iterator& operator ++ () {  _node = _node->_next; return *(this); }
+      iterator operator ++ (int) { iterator tmp = *(this); ++*(this); return tmp; }
+      iterator& operator -- () { _node = _node->_prev; return *(this); }
+      iterator operator -- (int) { iterator tmp = *(this); --*(this); return tmp;  }
 
-      iterator& operator = (const iterator& i) { return *(this); }
+      iterator& operator = (const iterator& i) { _node = i._node; return *(this); }
 
-      bool operator != (const iterator& i) const { return false; }
-      bool operator == (const iterator& i) const { return false; }
+      bool operator != (const iterator& i) const { return (this->_node != i._node); }
+      bool operator == (const iterator& i) const { return (this->_node == i._node); }
 
    private:
       DListNode<T>* _node;
    };
 
    // TODO: implement these functions
-   iterator begin() const { return 0; }
-   iterator end() const { return 0; }
-   bool empty() const { return false; }
-   size_t size() const {  return 0; }
+   iterator begin() const { return iterator(_head); }
+   iterator end() const { return iterator(_head->_prev); }
+   bool empty() const { return (_head->_prev == head); }
+   size_t size() const {
+      size_t count = 0;
+      for (iterator li = begin(); li != end(); li++)
+         count++;
+      return count;
+   }
 
    void push_back(const T& x) { }
    void pop_front() { }

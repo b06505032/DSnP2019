@@ -39,7 +39,7 @@ public:
       T& operator * () { return (*_node); }
       iterator& operator ++ () { _node++; return (*this); }
       iterator operator ++ (int) { iterator tmp = *this; _node++; return tmp; }
-      iterator& operator -- () {  _node--; return (*this); }
+      iterator& operator -- () { _node--; return (*this); }
       iterator operator -- (int) { iterator tmp = *this; _node--; return tmp; }
 
       iterator operator + (int i) const { return iterator(_node + i); }
@@ -63,16 +63,55 @@ public:
    T& operator [] (size_t i) { return _data[i]; }
    const T& operator [] (size_t i) const { return _data[i]; }
 
-   void push_back(const T& x) { }
-   void pop_front() { }
-   void pop_back() { }
+   void push_back(const T& x) { 
+      _size++;
+      if (_size > _capacity)
+         expandArr();
+      _data[_size-1] = x;
+      is_sorted = false;
+   }
 
-   bool erase(iterator pos) { return false; }
-   bool erase(const T& x) { return false; }
+   void pop_front() {
+      if(empty())
+         return;
+      else if(_size == 1) {
+         _size--;
+      }
+      else if(_size >= 2) {
+         _data[0] = _data[_size-1];
+         _size--;
+      }
+   }
 
-   iterator find(const T& x) { return end(); }
+   void pop_back() { 
+      if(empty()) 
+         return ;
+      else
+         _size--;
+   }
 
-   void clear() { }
+   bool erase(iterator pos) { 
+      if(empty())
+         return false;
+      // *pos = _data[_size-1];
+      *pos = *((iterator)(&_data[_size - 1]));
+      _size--;
+      return true;
+   }
+   
+   bool erase(const T& x) { 
+      if (empty()) return false;
+   }
+
+   iterator find(const T& x) { 
+      for (size_t i = 0 ; i < _size ; i++)
+      {
+         if(_data[i] == x)
+            return (iterator)(&_data[i]);
+      }
+   }
+
+   void clear() { _size = 0; }
 
    // [Optional TODO] Feel free to change, but DO NOT change ::sort()
    void sort() const { if (!empty()) ::sort(_data, _data+_size); }
@@ -89,6 +128,19 @@ private:
    mutable bool  _isSorted;   // (optionally) to indicate the array is sorted
 
    // [OPTIONAL TODO] Helper functions; called by public member functions
+   void expandArr(){
+      if(_size == 1) {
+         _capacity = 1;
+         _data = new T[_capacity];
+         return;
+      }
+      else{_capacity*=2;
+         T *tmp = new T[_capacity];
+         for (size_t i = 0; i < _size; i++)
+            tmp[i] = _data[i];
+         _data = tmp;
+      }
+   }
 };
 
 #endif // ARRAY_H

@@ -66,9 +66,9 @@ public:
    void push_back(const T& x) { 
       _size++;
       if (_size > _capacity)
-         expandArr();
+         expand();
       _data[_size-1] = x;
-      is_sorted = false;
+      _isSorted = false;
    }
 
    void pop_front() {
@@ -81,6 +81,7 @@ public:
          _data[0] = _data[_size-1];
          _size--;
       }
+      _isSorted = false;
    }
 
    void pop_back() { 
@@ -96,11 +97,19 @@ public:
       // *pos = _data[_size-1];
       *pos = *((iterator)(&_data[_size - 1]));
       _size--;
+      _isSorted = false;
       return true;
    }
    
    bool erase(const T& x) { 
-      if (empty()) return false;
+      if (empty())
+         return false;
+      iterator f = find(x);
+      if(f==end()) {
+         return false;
+      }
+      erase(f);
+      return true;
    }
 
    iterator find(const T& x) { 
@@ -109,6 +118,7 @@ public:
          if(_data[i] == x)
             return (iterator)(&_data[i]);
       }
+      return end();
    }
 
    void clear() { _size = 0; }
@@ -125,19 +135,22 @@ private:
    T*            _data;
    size_t        _size;       // number of valid elements
    size_t        _capacity;   // max number of elements
-   mutable bool  _isSorted;   // (optionally) to indicate the array is sorted
+   mutable bool  _isSorted = true;   // (optionally) to indicate the array is sorted
 
    // [OPTIONAL TODO] Helper functions; called by public member functions
-   void expandArr(){
+   void expand(){
       if(_size == 1) {
          _capacity = 1;
          _data = new T[_capacity];
          return;
       }
-      else{_capacity*=2;
+      else{
+         _capacity*=2;
          T *tmp = new T[_capacity];
          for (size_t i = 0; i < _size; i++)
             tmp[i] = _data[i];
+         if (_data != NULL)
+            delete[] _data;
          _data = tmp;
       }
    }

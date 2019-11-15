@@ -13,6 +13,13 @@
         "deque": "cpp",
         "queue": "cpp",
         "__hash_table": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "ostream": "cpp",
+        "iostream": "cpp",
+        "array": "cpp",
+        "bitset": "cpp",
+        "initializer_list": "cpp",
+        "iterator": "cpp",
+        "__node_handle": "cpp"
     }
 }

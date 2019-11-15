@@ -113,11 +113,13 @@ public:
    }
 
    iterator find(const T& x) { 
-      for (size_t i = 0 ; i < _size ; i++)
-      {
-         if(_data[i] == x)
-            return (iterator)(&_data[i]);
-      }
+      // for (size_t i = 0 ; i < _size ; i++)
+      // {
+      //    if(_data[i] == x)
+      //       return (iterator)(&_data[i]);
+      // }
+      for (iterator i = begin(); i != end(); ++i)
+         if (*i == x) return i;
       return end();
    }
 

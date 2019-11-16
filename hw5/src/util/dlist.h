@@ -84,13 +84,13 @@ public:
       return count;
    }
 
-   void push_back(const T& x) {
+   void push_back(const T& x) { // NO PROBLEM!
       if(empty()) {
          DListNode<T>* temp = new DListNode<T>(x, _head, _head);
          _head->_next = _head->_prev = temp;
          _head = temp;
       }
-      else {
+      else { //insert a node before (head->prev)
          DListNode<T>* temp = new DListNode<T>(x, (_head->_prev)->_prev, (_head->_prev));
 	      (_head->_prev)->_prev->_next = temp;
 	      (_head->_prev)->_prev = temp;
@@ -103,9 +103,8 @@ public:
          // cout<<"empty!"<<endl;
          return;
       }
-      // if (_head->_next->_next==_head) {
-      if(size()==1) {
-         cout << "pop_front the only node!" << endl;
+      else if(size()==1) {
+         // cout << "pop_front the only node!" << endl;
          DListNode<T>* t = _head;
          _head = _head->_prev;
          _head->_prev = _head->_next = _head;
@@ -113,26 +112,31 @@ public:
          return;
       }
       else {
-         
+         // cout << "pop_front!" << endl;
+         DListNode<T>* temp = _head; // delete head, set temp=head
+         _head = _head->_next;       // make the second node be the head
+         temp->_prev->_next = temp->_next;
+         temp->_next->_prev = temp->_prev;
+         delete temp;
       }
 		
    }
-   void pop_back() { 
+   void pop_back() { // NO PROBLEM!
       if (empty()) { 
          // cout<<"empty!"<<endl;
          return;
       }
-      // if (_head->_next->_next==_head) {
-      if(size()==1) {
+      else if(size()==1) {
          // cout << "pop_back the only node!" << endl;
-         DListNode<T>* t = _head;
+         DListNode<T>* temp = _head;
          _head = _head->_prev;
          _head->_prev = _head->_next = _head;
-         delete t;
+         delete temp;
          return;
       }
       else {
-         DListNode<T>* temp = _head->_prev;
+         // cout << "pop_back!" << endl;
+         DListNode<T>* temp = _head->_prev->_prev;
          temp->_prev->_next = temp->_next;
          temp->_next->_prev = temp->_prev;
          delete temp;
@@ -143,22 +147,25 @@ public:
    bool erase(iterator pos) { 
       if (empty()) return false;
       if(pos==begin() && pos== lastnode() && size()==1) {
-         cout << "erase the only node!" << endl;
+         // cout << "erase the only node!" << endl;
          DListNode<T>* t = _head;
          _head = _head->_prev;
          _head->_prev = _head->_next = _head;
          delete t;
          return true;
       }
-      if(pos == begin()){
-         cout<<"erase the first node!"<<endl;
+      if(pos == begin()) { 
+         // cout<<"erase the first node!"<<endl;
+         pop_front();
+         return true;
       }
-      else if(pos == lastnode()){
-         cout<<"erase the last node!"<<endl;
+      else if(pos == lastnode()) {
+         // cout<<"erase the last node!"<<endl;
          pop_back();
+         return true;
       }
       else {
-         cout<<"erase the middle node!"<<endl;
+         // cout<<"erase the middle node!"<<endl;
          pos._node->_prev->_next = pos._node->_next;
          pos._node->_next->_prev = pos._node->_prev;
          delete pos._node;
@@ -168,11 +175,11 @@ public:
    bool erase(const T& x) { 
       if (empty())
          return false;
-      iterator f = find(x);
-      if(f==end()) {
+      iterator pos = find(x);
+      if(pos==end()) {
          return false;
       }
-      erase(f);
+      erase(pos);
       return true;
     }
 
@@ -190,7 +197,8 @@ public:
    }
 
    void clear() {
-      while(!empty()){
+      if(empty()) return;
+      while(!empty()) {
          pop_back();
       }
     }  // delete all nodes except for the dummy node

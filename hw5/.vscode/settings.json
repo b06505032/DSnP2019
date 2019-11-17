@@ -20,6 +20,7 @@
         "bitset": "cpp",
         "initializer_list": "cpp",
         "iterator": "cpp",
-        "__node_handle": "cpp"
+        "__node_handle": "cpp",
+        "random": "cpp"
     }
 }

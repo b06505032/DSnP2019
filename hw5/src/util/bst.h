@@ -64,11 +64,14 @@ public:
       const T& operator * () const { return _node->_data; }
       T& operator * () { return _node->_data; }
       iterator& operator ++ () { 
-         _node = BSTree::successor(_node);
+         _node = it_successor(_node);
          return *(this);
       }
       iterator operator ++ (int) { iterator tmp = *(this); ++*(this); return tmp; }
-      iterator& operator -- () { return *(this); } // not done yet
+      iterator& operator -- () { 
+         _node = it_predecessor(_node);
+         return *(this);
+      }
       iterator operator -- (int) { iterator tmp = *(this); --*(this); return tmp; }
 
       iterator& operator = (const iterator& i) { _node = i._node; return *(this); }
@@ -79,6 +82,47 @@ public:
 
    private:
       BSTreeNode<T>* _node;
+      BSTreeNode<T>* leftmost(BSTreeNode<T> *current){
+         while (current->_left != NULL) {
+            current = current->_left;
+         }
+         return current;
+      }
+      BSTreeNode<T>* rightmost(BSTreeNode<T>* current) {
+         while(current->_right != NULL && current->_right->_left != current) {
+            current = current->_right;
+         } 
+         return current;
+      }
+      BSTreeNode<T>* it_successor(BSTreeNode<T> *current) {
+         if (current->_right != NULL) {
+            if(current->_right->_left != current) {
+               current = leftmost(current->_right);
+               return current;
+            } else {
+               current = current->_right;
+               return current;
+            }
+         }
+         BSTreeNode<T>* successor = current->_parent;   
+         while (successor != NULL && current == successor->_right) {
+            current = successor;
+            successor = successor->_parent;
+         }
+         return successor;
+      }
+      BSTreeNode<T>* it_predecessor(BSTreeNode<T> *current) {
+         if (current->_left != NULL) {
+            current = rightmost(current->_left);
+            return current;
+         }
+         BSTreeNode<T>* predecessor = current->_parent;   
+         while (predecessor != NULL && current == predecessor->_left) {
+            current = predecessor;
+            predecessor = predecessor->_parent;
+         }
+         return predecessor;
+      }
    };
    
    iterator begin() const { 
@@ -92,7 +136,6 @@ public:
    size_t size() const { return _size; }
    void insert(const T& x) { 
       if (size()==0) { // set the root first
-         cout<<"build up the first node!"<<endl;
          BSTreeNode<T>* newNode = new BSTreeNode<T>(x);
          _root = newNode;
          _dummy = new BSTreeNode<T>(x);
@@ -106,38 +149,22 @@ public:
       // InorderPrint ();
    }
    void pop_front(){ // leftmost node (i.e. begin()) will be removed.
-      if(empty()) return;
-      BSTreeNode<T>* temp = leftmost(_root);
-      if(size()==1) {
-         cout<< "delete the only node!"<<endl;
-         _root = 0;
-         _dummy = 0;
-         _size = 0;
-         return;
-      }
-      if(temp == _root) {
-         cout<< "left most is the root!"<<endl;
-         _root = temp->_right;
-      }
-      else {
-         cout<<"else!"<<endl;
-         if(temp->_right == NULL) {
-            temp->_parent->_left = NULL;
-         }
-         else {
-            temp->_parent->_left = temp->_right;
-         }
-      }
-      delete temp;
-      _size--;
-      return;
    } 
    void pop_back() { // remove the last (rightmost for BSTree)
-      
    } 
-   bool erase(const T& x) { return true;}
+   iterator find(const T& x) { 
+      for (iterator i = begin(); i != end(); ++i)
+         if (*i == x) return i;
+      return end();
+   }
+   bool erase(const T& x) { 
+      if (empty()) return false; 
+      iterator pos = find(x);
+      if (pos==end()) return false;
+      else erase(pos);
+      return true;
+   }
    bool erase(iterator pos) { return true;}
-   iterator find(const T& x) { return end();}
    void clear() { }
    void sort() const { }
    void print() const { }
@@ -172,37 +199,25 @@ private:
    }
 
    // The function to find the leftmost node
-   static BSTreeNode<T>* leftmost(BSTreeNode<T> *current){
+   BSTreeNode<T>* leftmost(BSTreeNode<T>* current) const {
       while (current->_left != NULL) {
         current = current->_left;
       }
       return current;
    }
 
-   static BSTreeNode<T>* rightmost(BSTreeNode<T> *current){
-      while (current->_right != NULL) {
-        current = current->_right;
+   BSTreeNode<T>* rightmost(BSTreeNode<T>* current) const {
+      while (current->_right != _dummy && current->_right != NULL) {
+         current = current->_right;
       }
       return current;
    }
 
    // The function to find the minimum node of right descendant
-   static BSTreeNode<T>* successor(BSTreeNode<T> *current) {
-      if (current->_right != NULL) {
-         if(current->_right->_left != current) {
-            current =  leftmost(current->_right);
-            return current;
-         } else {
-           current = current->_right;
-           return current;
-         }
-      }
-      BSTreeNode<T>* successor = current->_parent;   
-      while (successor != NULL && current == successor->_right) {
-         current = successor;
-         successor = successor->_parent;
-      }
-      return successor;
+   
+
+   BSTreeNode<T>* successor(BSTreeNode<T>* n) {
+      return leftmost(n->_right);
    }
 
    void InorderPrint (){

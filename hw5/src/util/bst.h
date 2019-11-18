@@ -117,7 +117,7 @@ public:
             return current;
          }
          BSTreeNode<T>* predecessor = current->_parent;   
-         while (predecessor != NULL && current == predecessor->_left) {
+         while (predecessor->_parent != NULL && current == predecessor->_left) {
             current = predecessor;
             predecessor = predecessor->_parent;
          }
@@ -163,10 +163,15 @@ public:
    }
    bool erase(const T& x) { 
       if (empty()) return false; 
-      iterator pos = find(x);
-      if (pos==end()) return false;
-      else erase(pos);
-      return true;
+      // iterator pos = find(x);
+      // if (pos==end()) return false;
+      // else erase(pos);
+      BSTreeNode<T>* f = findHelper(x);
+      if(f!=NULL) {
+         deleteHelper(f);
+         return true;
+      }
+      else return false;
    }
    bool erase(iterator pos) {
       if (empty()) return false; 
@@ -179,10 +184,10 @@ public:
       BSTreeNode<T>* delete_node = pos._node;
       BSTreeNode<T>* y = 0;
       BSTreeNode<T>* x = 0;
-      if (delete_node->_left == NULL || delete_node->_right == NULL) {
-        y = delete_node;
+      if (delete_node->_left == NULL || delete_node->_right == NULL || delete_node->_right == _dummy) {
+         y = delete_node;
       }
-      else{
+      else {
         y = successor(delete_node);
       } 
       if (y->_left != NULL) {
@@ -225,7 +230,19 @@ public:
       }
    }
    void sort() const { }
-   void print() const { }
+   void print() const {
+      cout<<"print:"<<endl;
+      help_print(_root,0);
+      return ;
+   }
+   void help_print(BSTreeNode<T> *n,int i)const{
+      for(int j=0;j<i;j++) cout<<"      ";
+      if(n==_dummy||n==NULL){cout<<"["<<i<<"]"<<endl;return;}
+      cout<<"["<<i<<"] "<< " "<<n->_data<<endl;
+      help_print(n->_right, i+1);
+      help_print(n->_left,i+1);
+   }
+
 
 private:
    BSTreeNode<T>* _root;
@@ -244,7 +261,6 @@ private:
       else { 
          if (rootnode->_right == _dummy) {
             rootnode->_right = t;
-            t->_parent = rootnode;
             t->_right = _dummy;
             _dummy->_left = t;
          }
@@ -254,6 +270,68 @@ private:
          else
             insertHelper(data, rootnode->_right);
       }
+   }
+
+   BSTreeNode<T>* findHelper(const T& x)
+   {
+      BSTreeNode<T> *current = _root;
+      while (current != NULL && current != _dummy && x != current->_data) {
+         if (x < current->_data){                      
+            current = current->_left;
+         }
+         else {
+            current = current->_right;
+         }
+      }
+      return current;
+   }
+
+   void deleteHelper(BSTreeNode<T>* delete_node) {
+      if(size()==1) {
+         _root = 0;
+         _dummy = 0;
+         _size = 0;
+         return;
+      }
+      BSTreeNode<T>* y = 0;
+      BSTreeNode<T>* x = 0;
+      if (delete_node->_left == NULL || delete_node->_right == NULL || delete_node->_right == _dummy) {
+         y = delete_node;
+      }
+      else {
+        y = successor(delete_node);
+      } 
+      if (y->_left != NULL) {
+         x = y->_left;
+      } 
+      else{
+         x = y->_right;
+      }
+
+      if (x != NULL) { 
+         x->_parent = y->_parent; 
+      }
+      if (y->_parent == NULL) {
+         this->_root = x;
+      }
+      else if (y == y->_parent->_left){
+         y->_parent->_left = x;
+      }
+      else {
+         y->_parent->_right = x;
+      }
+      if (y != delete_node) { 
+         delete_node->_data = y->_data; 
+      }
+      delete y;
+      y = 0;
+
+      if (_root != 0) {
+         BSTreeNode<T>* maxnode = rightmost(_root);
+         maxnode->_right = _dummy;
+         _dummy->_left = maxnode;
+      }
+      _size--;
    }
 
    // The function to find the leftmost node

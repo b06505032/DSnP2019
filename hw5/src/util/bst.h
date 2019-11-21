@@ -167,7 +167,13 @@ public:
       // if (pos==end()) return false;
       // else erase(pos);
       BSTreeNode<T>* f = findHelper(x);
-      if(f!=NULL) {
+      if(f != NULL) {
+         if(size()==1) {
+            _root = 0;
+            _dummy = 0;
+            _size = 0;
+            return true;
+         }
          deleteHelper(f);
          return true;
       }
@@ -175,7 +181,7 @@ public:
    }
    bool erase(iterator pos) {
       if (empty()) return false; 
-      if(size()==1) {
+      if (size()==1) {
          _root = 0;
          _dummy = 0;
          _size = 0;
@@ -214,7 +220,6 @@ public:
       }
       delete y;
       y = 0;
-
       if (_root != 0) {
          BSTreeNode<T>* maxnode = rightmost(_root);
          maxnode->_right = _dummy;
@@ -287,42 +292,31 @@ private:
    }
 
    void deleteHelper(BSTreeNode<T>* delete_node) {
-      if(size()==1) {
-         _root = 0;
-         _dummy = 0;
-         _size = 0;
-         return;
-      }
       BSTreeNode<T>* y = 0;
       BSTreeNode<T>* x = 0;
-      if (delete_node->_left == NULL || delete_node->_right == NULL || delete_node->_right == _dummy) {
+      if (delete_node->_left == NULL || delete_node->_right == NULL || delete_node->_right == _dummy)
          y = delete_node;
-      }
-      else {
+      else
         y = successor(delete_node);
-      } 
-      if (y->_left != NULL) {
+      
+      if (y->_left != NULL)
          x = y->_left;
-      } 
-      else{
+      else
          x = y->_right;
-      }
-
-      if (x != NULL) { 
+      
+      if (x != NULL)
          x->_parent = y->_parent; 
-      }
-      if (y->_parent == NULL) {
+      
+      if (y->_parent == NULL) 
          this->_root = x;
-      }
-      else if (y == y->_parent->_left){
+      else if (y == y->_parent->_left)
          y->_parent->_left = x;
-      }
-      else {
+      else 
          y->_parent->_right = x;
-      }
-      if (y != delete_node) { 
-         delete_node->_data = y->_data; 
-      }
+      
+      if (y != delete_node)  
+         delete_node->_data = y->_data;
+      
       delete y;
       y = 0;
 

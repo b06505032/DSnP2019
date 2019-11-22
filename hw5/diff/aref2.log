@@ -3,7 +3,7 @@ adt> adta -r 5000
 adt> usage
 Period time used : 0 seconds
 Total time used  : 0 seconds
-Total memory used: 0.457 M Bytes
+Total memory used: 0.4688 M Bytes
 
 adt> adtp
 === ADT (array) ===
@@ -1262,7 +1262,7 @@ adt> adtp
 adt> usage
 Period time used : 0 seconds
 Total time used  : 0 seconds
-Total memory used: 0.457 M Bytes
+Total memory used: 0.4688 M Bytes
 
 adt> adtp -r
 === ADT (array) ===
@@ -2521,14 +2521,14 @@ adt> adtp -r
 adt> usage
 Period time used : 0.01 seconds
 Total time used  : 0.01 seconds
-Total memory used: 0.4688 M Bytes
+Total memory used: 0.4805 M Bytes
 
 adt> adts
 
 adt> usage
 Period time used : 0 seconds
 Total time used  : 0.01 seconds
-Total memory used: 0.4922 M Bytes
+Total memory used: 0.4883 M Bytes
 
 adt> adtp
 === ADT (array) ===
@@ -3785,9 +3785,9 @@ adt> adtp
 
 
 adt> usage
-Period time used : 0.01 seconds
-Total time used  : 0.02 seconds
-Total memory used: 0.4922 M Bytes
+Period time used : 0 seconds
+Total time used  : 0.01 seconds
+Total memory used: 0.4883 M Bytes
 
 adt> adtp -r
 === ADT (array) ===
@@ -5044,9 +5044,9 @@ adt> adtp -r
 
 
 adt> usage
-Period time used : 0 seconds
+Period time used : 0.01 seconds
 Total time used  : 0.02 seconds
-Total memory used: 0.5039 M Bytes
+Total memory used: 0.4883 M Bytes
 
 adt> adtr 3
 

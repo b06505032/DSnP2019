@@ -203,7 +203,46 @@ public:
       }
     }  // delete all nodes except for the dummy node
 
-   void sort() const { }
+   void sort() const { 
+      if(_isSorted) return;
+      QuickSort(_head, _head->_prev->_prev);
+      _isSorted = true;
+   }
+
+   void swap(T& a, T& b) const {
+      T temp = a;
+      a = b;
+      b = temp;
+   }
+
+   void QuickSort(DListNode<T> *front, DListNode<T> *back) const {
+      if (front != _head->_prev && front != back && front != back->_next)
+      {
+         DListNode<T> *pivot = Partition(front, back);
+         QuickSort(front, pivot->_prev);
+         QuickSort(pivot->_next, back);
+      }
+   }
+
+   DListNode<T>* Partition(DListNode<T> *front, DListNode<T> *back) const {
+      T pivot = back->_data;
+      DListNode<T>* i = front->_prev;
+      for (DListNode<T>* j = front; j != back; j = j->_next) {
+         if (j->_data < pivot) {
+            if(i == _head->_prev)
+               i = front;
+            else
+               i = i->_next;
+            swap(i->_data, j->_data);
+         }
+      }
+      if(i == _head->_prev)
+         i = front;
+      else
+         i = i->_next;
+      swap(i->_data, back->_data);
+      return i;
+   }
 
 private:
    // [NOTE] DO NOT ADD or REMOVE any data member

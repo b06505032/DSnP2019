@@ -15,6 +15,9 @@
 #include "cirMgr.h"
 #include "cirGate.h"
 #include "util.h"
+#include <fstream>
+#include <sstream>
+#include <stdlib.h>
 
 using namespace std;
 
@@ -151,6 +154,58 @@ parseError(CirParseError err)
 bool
 CirMgr::readCircuit(const string& fileName)
 {
+   // 1. READ IN ENTIRE FILE
+   ifstream infile;
+   infile.open("./" + fileName);
+   if (infile.fail()) {
+      cerr<<"Cannot open design \""<<fileName<<"\"!!"<<endl;
+      return false;
+   }
+   stringstream strStream;
+   strStream << infile.rdbuf();
+   string aagstring = strStream.str();
+
+   // 2. SPLIT THE STRING WITH \n
+   vector<string> l;
+   string::size_type pos1, pos2;
+   string c = "\n";
+   pos2 = aagstring.find(c);
+   pos1 = 0;
+   while(string::npos != pos2)
+   {
+      l.push_back(aagstring.substr(pos1, pos2-pos1));
+      pos1 = pos2 + c.size();
+      pos2 = aagstring.find(c, pos1);
+   }
+   if(pos1 != aagstring.length())
+      l.push_back(aagstring.substr(pos1));
+   // for(vector<string>::size_type i = 0; i != l.size(); ++i)
+      // cout << "l["<<i<<"]" << l[i] << endl;
+
+   // 3. SPLIT THE l[0] WITH " ", AND STORE IN miloa[]
+   vector<string> header;
+   string::size_type pos1_, pos2_;
+   string d = " ";
+   pos2_ = l[0].find(d);
+   pos1_ = 0;
+   while(string::npos != pos2_)
+   {
+      header.push_back(l[0].substr(pos1_, pos2_-pos1_));
+      pos1_ = pos2_ + d.size();
+      pos2_ = l[0].find(d, pos1_);
+   }
+   if(pos1_ != l[0].length())
+      header.push_back(l[0].substr(pos1_));
+   miloa[0] = atof(header[1].c_str()); // store in miloa
+   miloa[1] = atof(header[2].c_str());
+   miloa[2] = atof(header[3].c_str());
+   miloa[3] = atof(header[4].c_str());
+   miloa[4] = atof(header[5].c_str());
+
+
+
+   
+   
    return true;
 }
 
@@ -169,6 +224,14 @@ Circuit Statistics
 void
 CirMgr::printSummary() const
 {
+   int sum = miloa[1] + miloa[3] + miloa[4];
+   cout << "Circuit Statistics" << endl;
+   cout << "==================" << endl;
+   cout << "  PI    " << setw(8) << right << miloa[1] << endl;
+   cout << "  PO    " << setw(8) << right << miloa[3] << endl;
+   cout << "  AIG   " << setw(8) << right << miloa[4] << endl;
+   cout << "------------------" << endl;
+   cout << "  Total " << setw(8) << right << sum << endl;
 }
 
 void

@@ -43,6 +43,20 @@ public:
    void writeAag(ostream&) const;
 
 private:
+   // m, maximum index
+   // i, #inputs
+   // l, #latches = 0
+   // o, #outputs
+   // a, #AND gates
+  //  unsigned miloa[5];
+   int miloa[5];
+   IdList _in;
+   IdList _latch;
+   IdList _out;
+   IdList _aig;
+
+
+   vector<string> _comments;
 };
 
 #endif // CIR_MGR_H

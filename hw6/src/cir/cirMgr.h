@@ -13,6 +13,7 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <map>
 
 using namespace std;
 
@@ -42,19 +43,18 @@ public:
    void printFloatGates() const;
    void writeAag(ostream&) const;
 
+   bool lexOptions(const string& option, vector<string>& tokens) const;
 private:
    // m, maximum index
    // i, #inputs
    // l, #latches = 0
    // o, #outputs
    // a, #AND gates
-  //  unsigned miloa[5];
-   int miloa[5];
-   IdList _in;
-   IdList _latch;
-   IdList _out;
-   IdList _aig;
-
+   unsigned miloa[5];
+   GateList _in;
+   GateList _out;
+   GateList _aig;
+   map<unsigned, CirGate*> _Gatelist;
 
    vector<string> _comments;
 };

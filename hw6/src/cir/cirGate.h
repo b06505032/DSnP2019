@@ -25,39 +25,39 @@ class CirGate;
 class CirGate
 {
 public:
-   friend class CirMgr;
+  friend class CirMgr;
 
-   CirGate(GateType type, unsigned id, unsigned lineNo): _type(type), _id(id), _lineNo(lineNo) {}
-   virtual ~CirGate() {}
+  CirGate(GateType type, unsigned id, unsigned lineNo): _type(type), _id(id), _lineNo(lineNo) {}
+  virtual ~CirGate() {}
 
-   // Basic access methods
-   string getTypeStr() const { 
-    switch (_type) {
-      case UNDEF_GATE: return "UNDEF";
-      case PI_GATE:    return "PI";
-      case PO_GATE:    return "PO";
-      case AIG_GATE:   return "AIG";
-      case CONST_GATE: return "CONST";
-      default:         return "";
-     }
-   }
-   unsigned getLineNo() const { return _lineNo; }
+  // Basic access methods
+  string getTypeStr() const { 
+  switch (_type) {
+    case UNDEF_GATE: return "UNDEF";
+    case PI_GATE:    return "PI";
+    case PO_GATE:    return "PO";
+    case AIG_GATE:   return "AIG";
+    case CONST_GATE: return "CONST";
+    default:         return "";
+    }
+  }
+  unsigned getLineNo() const { return _lineNo; }
 
-   // Printing functions
-   virtual void printGate() const = 0;
-   void reportGate() const;
-   void reportFanin(int level) const;
-   void reportFanout(int level) const;
+  // Printing functions
+  // virtual void printGate() const = 0;
+  void reportGate() const;
+  void reportFanin(int level) const;
+  void reportFanout(int level) const;
 
 private:
 
 protected:
-   GateType _type;
-   unsigned _id;
-   unsigned _lineNo;
-   GateList _fanin;
-   GateList _fanout;
-   string _name;
+  GateType _type;
+  unsigned _id;
+  unsigned _lineNo;
+  GateList _fanin;
+  GateList _fanout;
+  string _name;
 };
 
 class CirConstGate: public CirGate  {

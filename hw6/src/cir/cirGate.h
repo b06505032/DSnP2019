@@ -57,6 +57,7 @@ protected:
   unsigned _lineNo;
   GateList _fanin;
   GateList _fanout;
+  vector<bool> _invert;
   string _name;
 };
 

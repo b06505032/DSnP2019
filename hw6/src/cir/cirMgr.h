@@ -30,7 +30,11 @@ public:
 
    // Access functions
    // return '0' if "gid" corresponds to an undefined gate.
-   CirGate* getGate(unsigned gid) const { return 0; }
+   CirGate* getGate(unsigned gid) const { 
+      map<unsigned, CirGate*>::const_iterator it = _Gatelist.find(gid);
+      if (it == _Gatelist.end()) return 0;
+      return it->second;
+   }
 
    // Member functions about circuit construction
    bool readCircuit(const string&);
@@ -43,13 +47,13 @@ public:
    void printFloatGates() const;
    void writeAag(ostream&) const;
 
-   bool lexOptions(const string& option, vector<string>& tokens) const;
 private:
    // m, maximum index
    // i, #inputs
    // l, #latches = 0
    // o, #outputs
    // a, #AND gates
+   vector<string> l;
    unsigned miloa[5];
    GateList _in;
    GateList _out;
@@ -57,6 +61,14 @@ private:
    map<unsigned, CirGate*> _Gatelist;
 
    vector<string> _comments;
+   
+   // Helper function
+   void readHeader();
+   void readInput();
+   void readOutput();
+   void readAig();
+   void connection();
+   bool lexOptions(const string& option, vector<string>& tokens) const;
 };
 
 #endif // CIR_MGR_H

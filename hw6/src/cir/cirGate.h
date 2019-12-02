@@ -27,7 +27,7 @@ class CirGate
 public:
   friend class CirMgr;
 
-  CirGate(GateType type, unsigned id, unsigned lineNo): _type(type), _id(id), _lineNo(lineNo) {}
+  CirGate(GateType type, unsigned id, unsigned lineNo): _type(type), _id(id), _lineNo(lineNo) , _fanin(0), _fanout(0), _name(""){}
   virtual ~CirGate() {}
 
   // Basic access methods
@@ -44,13 +44,15 @@ public:
   unsigned getLineNo() const { return _lineNo; }
 
   // Printing functions
-  // virtual void printGate() const = 0;
+  virtual void printGate() const = 0;
   void reportGate() const;
   void reportFanin(int level) const;
   void reportFanout(int level) const;
 
-private:
+  
 
+private:
+  
 protected:
   GateType _type;
   unsigned _id;
@@ -64,26 +66,31 @@ protected:
 class CirConstGate: public CirGate  {
 public:
   CirConstGate(): CirGate(CONST_GATE, 0, 0) {}
+  void printGate() const { cout << "CONST0"; } 
 };
 
 class CirPiGate: public CirGate  {
 public:
   CirPiGate(unsigned id, unsigned lineNo): CirGate(PI_GATE, id, lineNo) {}
+  void printGate() const { cout << "PI  " << _id; }
 };
 
 class CirPoGate: public CirGate  {
 public:
   CirPoGate(unsigned id, unsigned lineNo): CirGate(PO_GATE, id, lineNo) {}
+  void printGate() const{}
 };
 
 class CirAigGate: public CirGate {
 public:
   CirAigGate(unsigned id, unsigned lineNo): CirGate(AIG_GATE, id, lineNo) {}
+  void printGate() const{}
 };
 
 class CirUndefGate: public CirGate  {
 public:
   CirUndefGate(unsigned id): CirGate(UNDEF_GATE, id, 0) {}
+  void printGate() const{ cout << "UNDEF " << _id; }
 };
 
 #endif // CIR_GATE_H

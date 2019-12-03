@@ -79,13 +79,13 @@ public:
 class CirPoGate: public CirGate  {
 public:
   CirPoGate(unsigned id, unsigned lineNo): CirGate(PO_GATE, id, lineNo) {}
-  void printGate() const{ cout << "PO  " << _id; }
+  void printGate() const{ cout << "PO  " << _id << " "; }
 };
 
 class CirAigGate: public CirGate {
 public:
   CirAigGate(unsigned id, unsigned lineNo): CirGate(AIG_GATE, id, lineNo) {}
-  void printGate() const{cout << "AIG " << _id; }
+  void printGate() const{cout << "AIG " << _id << " "; }
 };
 
 class CirUndefGate: public CirGate  {

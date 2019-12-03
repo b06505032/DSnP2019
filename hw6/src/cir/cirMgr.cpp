@@ -224,18 +224,28 @@ CirMgr::printNetlist() const
    for (size_t i = 0; i < _dfsList.size(); i++) {
       cout << "[" << n << "] ";
       n++;
-      if (_dfsList[i]->_type == PI_GATE) {
+      if (_dfsList[i]->_type == PI_GATE)
+      {
          _dfsList[i]->printGate();
          cout << endl;
       }
       else if (_dfsList[i]->_type == PO_GATE) 
       {
          _dfsList[i]->printGate();
+         if (_dfsList[i]->_fanin[0]->_type == UNDEF_GATE) cout << '*';
+         if (_dfsList[i]->_invert[0]) cout << '!';
+         cout << _dfsList[i]->_fanin[0]->_id;
          cout << endl;
       }
       else if(_dfsList[i]->_type == AIG_GATE)
       {
          _dfsList[i]->printGate();
+         if (_dfsList[i]->_fanin[0]->_type == UNDEF_GATE) cout << '*';
+         if (_dfsList[i]->_invert[0]) cout << '!';
+         cout<< _dfsList[i]->_fanin[0]->_id <<' ';
+         if (_dfsList[i]->_fanin[1]->_type == UNDEF_GATE) cout << '*';
+         if (_dfsList[i]->_invert[1]) cout << '!';
+         cout<< _dfsList[i]->_fanin[1]->_id;
          cout << endl;
       }
       else if(_dfsList[i]->_type == CONST_GATE)

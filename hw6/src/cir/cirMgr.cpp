@@ -187,7 +187,7 @@ CirMgr::readCircuit(const string& fileName)
    readOutput();
    readAig();
    connection();
-   genDFSList();
+   DFS();
 
    return true;
 }
@@ -219,20 +219,29 @@ CirMgr::printSummary() const
 void
 CirMgr::printNetlist() const
 {
-   unsigned undefNum = 0;
+   // cout<<_dfsList.size()<<endl;
+   unsigned n = 0;
    for (size_t i = 0; i < _dfsList.size(); i++) {
+      cout << "[" << n << "] ";
+      n++;
       if (_dfsList[i]->_type == PI_GATE) {
-         cout << "[" << i-undefNum << "] "<< "PI  ";
          _dfsList[i]->printGate();
          cout << endl;
       }
       else if (_dfsList[i]->_type == PO_GATE) 
       {
-
+         _dfsList[i]->printGate();
+         cout << endl;
       }
       else if(_dfsList[i]->_type == AIG_GATE)
       {
-
+         _dfsList[i]->printGate();
+         cout << endl;
+      }
+      else if(_dfsList[i]->_type == CONST_GATE)
+      {
+         _dfsList[i]->printGate();
+         cout << endl;
       }
    }
 }
@@ -420,15 +429,6 @@ CirMgr::connection(){
    }
 }
 
-void
-CirMgr::genDFSList() {
-   // CirGate::setGlobalRef();
-   // for (size_t i = 0; i < _out.size(); i++) {
-   //    _out[i]->dfsTraversal(_dfsList);
-   // }
-
-   DFS(_out[0]->_id);
-}
 
 bool
 CirMgr::lexOptions(const string& option, vector<string>& tokens) const
@@ -443,8 +443,8 @@ CirMgr::lexOptions(const string& option, vector<string>& tokens) const
 }
 
 void
-CirMgr::DFS(unsigned Start){
-   num_vertex = miloa[3];
+CirMgr::DFS(){
+   num_vertex = miloa[1]+miloa[3]+miloa[4];
    color = new int[num_vertex];           
    discover = new int[num_vertex];
    finish = new int[num_vertex];
@@ -458,12 +458,9 @@ CirMgr::DFS(unsigned Start){
       predecessor[i] = -1;
    }
 
-   unsigned i = Start;
-   for (unsigned j = 0; j < num_vertex; j++) { 
-      if (color[i] == 0) {               
-         DFSVisit(i, time);
-      }
-      i = j;                             
+   for (unsigned i = 0; i < _out.size(); i++) {
+      if (color[i] == 0) 
+         DFSVisit(_out[i]->_id, time);
    }
 }
 
@@ -474,13 +471,21 @@ CirMgr::DFSVisit(unsigned vertex, int &time) {
       color[vertex] = 1;                         
       discover[vertex] = ++time;                 
       for (unsigned itr = 0; itr < _Gatelist[vertex]->_fanin.size();  itr++) {                    
-        if (color[itr] == 0) {                
+         if (color[itr] == 0) {                
             predecessor[itr] = vertex;        
-            DFSVisit(itr, time);              
-        }
+            DFSVisit(_Gatelist[vertex]->_fanin[itr]->_id, time);              
+         }
       }
       color[vertex] = 2;                         
       finish[vertex] = ++time;
    }
-   _dfsList.push_back(_Gatelist[vertex]);
+
+   bool exist = false;
+   for(int i=0;i < _dfsList.size();i++) {
+      if(_Gatelist[vertex]->_id == _dfsList[i]->_id) {
+         exist = true;
+         break;
+      }
+   }
+   if(exist==false) _dfsList.push_back(_Gatelist[vertex]);
 }

@@ -54,13 +54,13 @@ private:
    // o, #outputs
    // a, #AND gates
    vector<string> l;
-   unsigned miloa[5];
+   // unsigned miloa[5];
+   unsigned M,I,L,O,A;
    GateList _in;
    GateList _out;
    GateList _aig;
    map<unsigned, CirGate*> _Gatelist;
    GateList _dfsList;
-   vector<string> _comments;
    
    // for DFS
    unsigned _globalRef;
@@ -72,6 +72,7 @@ private:
    void readInput();
    void readOutput();
    void readAig();
+   void readComment();
    void connection();
    bool lexOptions(const string& option, vector<string>& tokens) const;
 };

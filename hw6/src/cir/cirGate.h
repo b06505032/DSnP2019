@@ -73,7 +73,10 @@ public:
 class CirPiGate: public CirGate  {
 public:
   CirPiGate(unsigned id, unsigned lineNo): CirGate(PI_GATE, id, lineNo) {}
-  void printGate() const { cout << "PI  " << _id; }
+  void printGate() const { 
+    cout << "PI  " << _id;
+    if(_name!="") cout << " (" << _name << ")";
+  }
 };
 
 class CirPoGate: public CirGate  {

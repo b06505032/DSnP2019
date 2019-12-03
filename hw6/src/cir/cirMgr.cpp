@@ -186,6 +186,7 @@ CirMgr::readCircuit(const string& fileName)
    readInput();
    readOutput();
    readAig();
+   readComment();
    connection();
    DFS();
 
@@ -209,11 +210,11 @@ CirMgr::printSummary() const
 {
    cout << "Circuit Statistics" << endl;
    cout << "==================" << endl;
-   cout << "  PI    " << setw(8) << right << miloa[1] << endl;
-   cout << "  PO    " << setw(8) << right << miloa[3] << endl;
-   cout << "  AIG   " << setw(8) << right << miloa[4] << endl;
+   cout << "  PI    " << setw(8) << right << I << endl;
+   cout << "  PO    " << setw(8) << right << O << endl;
+   cout << "  AIG   " << setw(8) << right << A << endl;
    cout << "------------------" << endl;
-   cout << "  Total " << setw(8) << right << miloa[1] + miloa[3] + miloa[4] << endl;
+   cout << "  Total " << setw(8) << right << I+O+A << endl;
 }
 
 void
@@ -222,23 +223,25 @@ CirMgr::printNetlist() const
    // cout<<_dfsList.size()<<endl;
    unsigned n = 0;
    for (size_t i = 0; i < _dfsList.size(); i++) {
-      cout << "[" << n << "] ";
-      n++;
       if (_dfsList[i]->_type == PI_GATE)
       {
+         cout << "[" << i-n << "] ";
          _dfsList[i]->printGate();
          cout << endl;
       }
       else if (_dfsList[i]->_type == PO_GATE) 
       {
+         cout << "[" << i-n << "] ";
          _dfsList[i]->printGate();
          if (_dfsList[i]->_fanin[0]->_type == UNDEF_GATE) cout << '*';
          if (_dfsList[i]->_invert[0]) cout << '!';
          cout << _dfsList[i]->_fanin[0]->_id;
+         if(_dfsList[i]->_name!="") cout << " (" << _dfsList[i]->_name << ")";
          cout << endl;
       }
       else if(_dfsList[i]->_type == AIG_GATE)
       {
+         cout << "[" << i-n << "] ";
          _dfsList[i]->printGate();
          if (_dfsList[i]->_fanin[0]->_type == UNDEF_GATE) cout << '*';
          if (_dfsList[i]->_invert[0]) cout << '!';
@@ -250,8 +253,12 @@ CirMgr::printNetlist() const
       }
       else if(_dfsList[i]->_type == CONST_GATE)
       {
+         cout << "[" << i-n << "] ";
          _dfsList[i]->printGate();
          cout << endl;
+      }
+      else {
+         n++;
       }
    }
 }
@@ -336,18 +343,20 @@ CirMgr::readHeader(){
    }
    if(pos1_ != l[0].length())
       header.push_back(l[0].substr(pos1_));
-   miloa[0] = atof(header[1].c_str()); // store in miloa
-   miloa[1] = atof(header[2].c_str());
-   miloa[2] = atof(header[3].c_str());
-   miloa[3] = atof(header[4].c_str());
-   miloa[4] = atof(header[5].c_str());
+   M = atof(header[1].c_str()); // store in miloa
+   I = atof(header[2].c_str());
+   L = atof(header[3].c_str());
+   O = atof(header[4].c_str());
+   A = atof(header[5].c_str());
+   _in.resize(I);
+   _out.resize(O);
+   _aig.resize(A);
 }
 
 void
 CirMgr::readInput(){
    // PI_GATE
-   _in.resize(miloa[1]);
-   for (unsigned i = 0; i < miloa[1]; i++) {
+   for (unsigned i = 0; i < I; i++) {
       unsigned id = atof(l[i+1].c_str())/2;
       unsigned lineNo = i+2;
       _in[i] = new CirPiGate(id, lineNo);
@@ -358,10 +367,9 @@ CirMgr::readInput(){
 void
 CirMgr::readOutput(){
    // PO_GATE
-   _out.resize(miloa[3]);
-   for (unsigned i = 0; i < miloa[3]; i++) {
-      unsigned id = miloa[0]+i+1;
-      unsigned lineNo = i+2+miloa[1];
+   for (unsigned i = 0; i < O; i++) {
+      unsigned id = M+i+1;
+      unsigned lineNo = i+2+I;
       _out[i] = new CirPoGate(id, lineNo);
       _Gatelist[id] = _out[i];
    }
@@ -370,25 +378,51 @@ CirMgr::readOutput(){
 void
 CirMgr::readAig(){
    // AIG_GATE
-   _aig.resize(miloa[4]);
-   for (unsigned i = 0; i < miloa[4]; i++) {
+   for (unsigned i = 0; i < A; i++) {
       vector<string> Aigs; //parse AIG | INPUT1 | INPUT2
-      if (!lexOptions(l[i+1+miloa[1]+miloa[3]], Aigs)) return;
+      if (!lexOptions(l[i+1+I+O], Aigs)) return;
       unsigned id = atof(Aigs[0].c_str())/2;
-      unsigned lineNo = i+2+miloa[1]+miloa[3];
+      unsigned lineNo = i+2+I+O;
       _aig[i] = new CirAigGate(id, lineNo);
       _Gatelist[id] = _aig[i];
    }
 }
 
 void
+CirMgr::readComment(){
+   int nameLine = I+O+A+1;
+   while (nameLine < l.size()){
+      if (l[nameLine] == "c") break;
+      vector<string> newName;
+      if (!lexOptions(l[nameLine], newName)) return ;
+      if (l[nameLine][0] == 'i') {
+         int index;
+         string s = newName[0];
+         stringstream ss(s);
+         ss.ignore(1);
+         ss >> index;
+         _in[index]->_name = newName[1];
+      }
+      else if (l[nameLine][0] == 'o') {
+         int index;
+         string s = newName[0];
+         stringstream ss(s);
+         ss.ignore(1);
+         ss >> index;
+         _out[index]->_name = newName[1];
+      }
+      nameLine++;
+   }
+}
+
+void
 CirMgr::connection(){
    // DEAL WITH AIG_GATE's FAN_IN FAN_OUT
-   for (unsigned i = 0; i < miloa[4]; i++) {
+   for (unsigned i = 0; i < A; i++) {
       // parse _aig[i] | INPUT1 | INPUT2
       // Aigs    [0]      [1]      [2]
       vector<string> Aigs; 
-      if (!lexOptions(l[i+1+miloa[1]+miloa[3]], Aigs)) return;
+      if (!lexOptions(l[i+1+I+O], Aigs)) return;
       unsigned aigid = atof(Aigs[0].c_str())/2;
       for (int count = 1; count != 3; count++) {
          if ((int)atof(Aigs[count].c_str()) % 2 != 0)
@@ -414,12 +448,12 @@ CirMgr::connection(){
       }
    }
    // DEAL WITH PO's FANIN
-   for (unsigned i = 0; i < miloa[3]; i++) {
-      unsigned outid = miloa[0]+i+1;
-      if ((int)atof(l[i+1+miloa[1]].c_str()) % 2 != 0)
+   for (unsigned i = 0; i < O; i++) {
+      unsigned outid = M+i+1;
+      if ((int)atof(l[i+1+I].c_str()) % 2 != 0)
       {  // invert
          _Gatelist[outid]->_invert.push_back(true);
-         unsigned id = (atof(l[i+1+miloa[1]].c_str())-1)/2;
+         unsigned id = (atof(l[i+1+I].c_str())-1)/2;
          map<unsigned, CirGate*>::iterator it = _Gatelist.find(id);
          if (it == _Gatelist.end())
             _Gatelist[id] = new CirUndefGate(id);
@@ -429,7 +463,7 @@ CirMgr::connection(){
       else
       {
          _Gatelist[outid]->_invert.push_back(false);
-         unsigned id = atof(l[i+1+miloa[1]].c_str())/2;
+         unsigned id = atof(l[i+1+I].c_str())/2;
          map<unsigned, CirGate*>::iterator it = _Gatelist.find(id);
          if (it == _Gatelist.end())
             _Gatelist[id] = new CirUndefGate(id);
@@ -438,7 +472,6 @@ CirMgr::connection(){
       }
    }
 }
-
 
 bool
 CirMgr::lexOptions(const string& option, vector<string>& tokens) const

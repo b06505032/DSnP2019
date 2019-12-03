@@ -27,7 +27,7 @@ class CirGate
 public:
   friend class CirMgr;
 
-  CirGate(GateType type, unsigned id, unsigned lineNo): _type(type), _id(id), _lineNo(lineNo) , _fanin(0), _fanout(0), _name(""){}
+  CirGate(GateType type, unsigned id, unsigned lineNo): _type(type), _id(id), _lineNo(lineNo) , _fanin(0), _fanout(0), _name("") {}
   virtual ~CirGate() {}
 
   // Basic access methods
@@ -49,7 +49,26 @@ public:
   void reportFanin(int level) const;
   void reportFanout(int level) const;
 
-  
+  // for DFS
+  // static unsigned _globalRef;
+  // unsigned _ref;
+  // bool isGlobalRef() {return (_ref == _globalRef);}
+  // void setToGlobalRef() {_ref = _globalRef;}
+  // static void setGlobalRef() {_globalRef++;}
+  // static unsigned initRef() {return _globalRef;}
+  // void dfsTraversal(GateList& dfsTl) {
+  //   if (_fanin.size() > 0) {
+  //     for (size_t i = 0; i < _fanin.size(); i++) {
+  //       if(!_fanin[i]->isGlobalRef()) {
+  //         _fanin[i]->setToGlobalRef();
+  //         _fanin[i]->dfsTraversal(dfsTl);
+  //       }
+  //     }
+  //   }
+  //   dfsTl.push_back(this);
+  // }
+
+
 
 private:
   

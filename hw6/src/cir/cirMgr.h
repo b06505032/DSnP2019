@@ -59,9 +59,17 @@ private:
    GateList _out;
    GateList _aig;
    map<unsigned, CirGate*> _Gatelist;
-
+   GateList _dfsList;
    vector<string> _comments;
    
+   unsigned num_vertex;
+   int *color;           // 0:white, 1:gray, 2:black
+   int *predecessor;
+   int *discover;
+   int *finish;
+   void DFS(unsigned Start);
+   void DFSVisit(unsigned vertex, int &time);
+
    // Helper function
    void readHeader();
    void readInput();
@@ -69,6 +77,7 @@ private:
    void readAig();
    void connection();
    bool lexOptions(const string& option, vector<string>& tokens) const;
+   void genDFSList();
 };
 
 #endif // CIR_MGR_H

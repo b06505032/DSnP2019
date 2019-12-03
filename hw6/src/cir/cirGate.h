@@ -50,25 +50,7 @@ public:
   void reportFanout(int level) const;
 
   // for DFS
-  // static unsigned _globalRef;
-  // unsigned _ref;
-  // bool isGlobalRef() {return (_ref == _globalRef);}
-  // void setToGlobalRef() {_ref = _globalRef;}
-  // static void setGlobalRef() {_globalRef++;}
-  // static unsigned initRef() {return _globalRef;}
-  // void dfsTraversal(GateList& dfsTl) {
-  //   if (_fanin.size() > 0) {
-  //     for (size_t i = 0; i < _fanin.size(); i++) {
-  //       if(!_fanin[i]->isGlobalRef()) {
-  //         _fanin[i]->setToGlobalRef();
-  //         _fanin[i]->dfsTraversal(dfsTl);
-  //       }
-  //     }
-  //   }
-  //   dfsTl.push_back(this);
-  // }
-
-
+  unsigned _ref;
 
 private:
   

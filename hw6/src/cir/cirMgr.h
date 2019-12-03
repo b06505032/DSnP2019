@@ -63,13 +63,9 @@ private:
    vector<string> _comments;
    
    // for DFS
-   unsigned num_vertex;
-   int *color;        // 0:white, 1:gray, 2:black
-   int *predecessor;
-   int *discover;
-   int *finish;
+   unsigned _globalRef;
    void DFS();
-   void DFSVisit(unsigned vertex, int &time);
+   void DFSVisit(unsigned vertex);
 
    // Helper function
    void readHeader();

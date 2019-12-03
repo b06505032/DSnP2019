@@ -443,49 +443,32 @@ CirMgr::lexOptions(const string& option, vector<string>& tokens) const
 }
 
 void
-CirMgr::DFS(){
-   num_vertex = miloa[1]+miloa[3]+miloa[4];
-   color = new int[num_vertex];           
-   discover = new int[num_vertex];
-   finish = new int[num_vertex];
-   predecessor = new int[num_vertex];
-
-   int time = 0;                          
-   for (int i = 0; i < num_vertex; i++) { 
-      color[i] = 0;
-      discover[i] = 0;
-      finish[i] = 0;
-      predecessor[i] = -1;
-   }
-
+CirMgr::DFS(){          
+   _globalRef = 0;
+   _globalRef++;
    for (unsigned i = 0; i < _out.size(); i++) {
-      if (color[i] == 0) 
-         DFSVisit(_out[i]->_id, time);
+      DFSVisit(_out[i]->_id);
    }
 }
 
 
 void
-CirMgr::DFSVisit(unsigned vertex, int &time) {
-   if(_Gatelist[vertex]->_fanin.size() > 0) {
-      color[vertex] = 1;                         
-      discover[vertex] = ++time;                 
-      for (unsigned itr = 0; itr < _Gatelist[vertex]->_fanin.size();  itr++) {                    
-         if (color[itr] == 0) {                
-            predecessor[itr] = vertex;        
-            DFSVisit(_Gatelist[vertex]->_fanin[itr]->_id, time);              
+CirMgr::DFSVisit(unsigned vertex) {
+   if (_Gatelist[vertex]->_fanin.size() > 0) {
+      for (size_t i = 0; i < _Gatelist[vertex]->_fanin.size(); i++) {
+         if(_Gatelist[vertex]->_fanin[i]->_ref != _globalRef) {
+            _Gatelist[vertex]->_fanin[i]->_ref = _globalRef;
+            DFSVisit(_Gatelist[vertex]->_fanin[i]->_id);
          }
       }
-      color[vertex] = 2;                         
-      finish[vertex] = ++time;
    }
-
-   bool exist = false;
-   for(int i=0;i < _dfsList.size();i++) {
-      if(_Gatelist[vertex]->_id == _dfsList[i]->_id) {
-         exist = true;
-         break;
-      }
-   }
-   if(exist==false) _dfsList.push_back(_Gatelist[vertex]);
+   // bool exist = false;
+   // for(int i=0;i < _dfsList.size();i++) {
+   //    if(_Gatelist[vertex]->_id == _dfsList[i]->_id) {
+   //       exist = true;
+   //       break;
+   //    }
+   // }
+   // if(exist==false) _dfsList.push_back(_Gatelist[vertex]);
+   _dfsList.push_back(_Gatelist[vertex]);
 }

@@ -43,15 +43,23 @@ public:
   }
   unsigned getLineNo() const { return _lineNo; }
 
-  // Printing functions
-  virtual void printGate() const = 0;
-  void reportGate() const;
-  void reportFanin(int level) const;
-  void reportFanout(int level) const;
-
   // for DFS
   unsigned _ref;
 
+  // Printing functions
+  virtual void printGate() const = 0;
+  void reportGate() const;
+  void reportFanin(int level);
+  void reportFanout(int level);
+
+  static unsigned _gmark;
+  mutable unsigned _mark;
+  // void mark() { _stat = _gstat; }
+  // bool marked() { return _stat == _gstat; }
+  // void resetmark() { ++_gstat; }
+  void dfs_fanin(int level, int cur);
+  void dfs_fanout(int level, int cur);
+  
 private:
   
 protected:
@@ -61,6 +69,7 @@ protected:
   GateList _fanin;
   GateList _fanout;
   vector<bool> _invert;
+  vector<bool> _outinvert;
   string _name;
 };
 

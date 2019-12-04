@@ -20,7 +20,7 @@ using namespace std;
 extern CirMgr *cirMgr;
 
 // TODO: Implement memeber functions for class(es) in cirGate.h
-
+unsigned CirGate::_gmark =0;
 /**************************************/
 /*   class CirGate member functions   */
 /**************************************/
@@ -39,16 +39,64 @@ CirGate::reportGate() const
 }
 
 void
-CirGate::reportFanin(int level) const
+CirGate::reportFanin(int level)
 {
    assert (level >= 0);
+   _gmark++;
+   dfs_fanin(level, 0);
 }
 
 void
-CirGate::reportFanout(int level) const
+CirGate::reportFanout(int level)
 {
    assert (level >= 0);
+   _gmark++;
+   dfs_fanout(level, 0);  
 }
 
+void
+CirGate::dfs_fanin(int level, int cur)
+{
+   if(level != -1) if(cur > level) return;
+   int _cur = cur;
+   if(_fanin.size()) _mark = _gmark;
+   if(_cur == 0) {
+      cout << getTypeStr() << " " << _id << endl;
+      _mark = _gmark;
+      ++_cur;
+   }
+   for(int n = 0; n < _fanin.size(); ++n) {
+      for(int m = 0; m < _cur; ++m) cout << "  ";
+      if(_invert[n]) cout << "!";
+      cout << _fanin[n]->getTypeStr() << " " << _fanin[n]->_id;
+      if(_fanin[n]->_mark == _gmark) { cout << " (*)" << endl; }
+      else {
+         cout << endl;
+         _fanin[n]->dfs_fanin( level, _cur + 1);
+      }
+   }
+}
 
-
+void 
+CirGate::dfs_fanout(int level, int cur)
+{
+   if(level != -1) if(cur > level) return;
+   int _cur = cur;
+   if(_fanout.size()) _mark = _gmark;
+   if(_cur == 0) {
+      cout << getTypeStr() << " " << _id << endl;
+      _mark = _gmark;
+      ++_cur;
+   }
+   for(int n = 0; n < _fanout.size(); ++n) {
+      for(int m = 0; m < _cur; ++m) cout << "  ";
+      if(_outinvert[n]) cout << "!";
+      cout << _fanout[n]->getTypeStr() << " " << _fanout[n]->_id;
+      if(_fanout[n]->_mark == _gmark) { cout << " (*)" << endl; }
+      else {
+         cout << endl;
+         _fanout[n]->dfs_fanout(level, _cur + 1);
+      }
+   }
+   
+}

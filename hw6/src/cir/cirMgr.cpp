@@ -325,6 +325,33 @@ CirMgr::printFloatGates() const
 void
 CirMgr::writeAag(ostream& outfile) const
 {
+   int dfs_A=0;
+   for (size_t i = 0; i < _dfsList.size(); i++)
+      if (_dfsList[i]->_type == AIG_GATE) dfs_A++;
+   outfile << "aag "<<M<<" "<<I<<" "<<L<<" "<<O<<" "<<dfs_A<<endl;
+   for (unsigned i = 0; i < I; i++) {
+      outfile << l[i+1];
+      outfile << endl;
+   }
+   for (unsigned i = 0; i < O; i++) {
+      outfile << l[i+1+I];
+      outfile << endl;
+   }
+   for (size_t i = 0; i < _dfsList.size(); i++) {
+      if (_dfsList[i]->_type != AIG_GATE) continue;
+      outfile << l[(_dfsList[i]->_lineNo)-1];  
+      outfile << endl;
+   }
+   int comment = I+O+A+1;
+   while (comment < l.size()) {
+      if (l[comment] == "c") break;
+      outfile << l[comment];
+      outfile << endl;
+      comment++;
+   }
+   outfile<<"c"<<endl;
+   // outfile<<"AAG output by Chung-Yang (Ric) Huang"<<endl;
+   outfile<<"AAG output by Chien-Ying (Catherine) Yang"<<endl;
 }
 
 
@@ -427,23 +454,25 @@ CirMgr::connection(){
       for (int count = 1; count != 3; count++) {
          if ((int)atof(Aigs[count].c_str()) % 2 != 0)
          { // invert
-            _Gatelist[aigid]->_invert.push_back(true);
             unsigned id = (atof(Aigs[count].c_str())-1)/2;
             map<unsigned, CirGate*>::iterator it = _Gatelist.find(id);
             if (it == _Gatelist.end())
                _Gatelist[id] = new CirUndefGate(id);
             _Gatelist[aigid]->_fanin.push_back(_Gatelist[id]);
+            _Gatelist[aigid]->_invert.push_back(true);
             _Gatelist[id]->_fanout.push_back(_Gatelist[aigid]);
+            _Gatelist[id]->_outinvert.push_back(true);
          }
          else
          {
-            _Gatelist[aigid]->_invert.push_back(false);
             unsigned id = atof(Aigs[count].c_str())/2;
             map<unsigned, CirGate*>::iterator it = _Gatelist.find(id);
             if (it == _Gatelist.end())
                _Gatelist[id] = new CirUndefGate(id);
             _Gatelist[aigid]->_fanin.push_back(_Gatelist[id]);
+            _Gatelist[aigid]->_invert.push_back(false);
             _Gatelist[id]->_fanout.push_back(_Gatelist[aigid]);
+            _Gatelist[id]->_outinvert.push_back(false);
          }
       }
    }
@@ -452,23 +481,25 @@ CirMgr::connection(){
       unsigned outid = M+i+1;
       if ((int)atof(l[i+1+I].c_str()) % 2 != 0)
       {  // invert
-         _Gatelist[outid]->_invert.push_back(true);
          unsigned id = (atof(l[i+1+I].c_str())-1)/2;
          map<unsigned, CirGate*>::iterator it = _Gatelist.find(id);
          if (it == _Gatelist.end())
             _Gatelist[id] = new CirUndefGate(id);
          _Gatelist[outid]->_fanin.push_back(_Gatelist[id]);
+         _Gatelist[outid]->_invert.push_back(true);
          _Gatelist[id]->_fanout.push_back(_Gatelist[outid]);
+         _Gatelist[id]->_outinvert.push_back(true);
       }
       else
       {
-         _Gatelist[outid]->_invert.push_back(false);
          unsigned id = atof(l[i+1+I].c_str())/2;
          map<unsigned, CirGate*>::iterator it = _Gatelist.find(id);
          if (it == _Gatelist.end())
             _Gatelist[id] = new CirUndefGate(id);
          _Gatelist[outid]->_fanin.push_back(_Gatelist[id]);
+         _Gatelist[outid]->_invert.push_back(false);
          _Gatelist[id]->_fanout.push_back(_Gatelist[outid]);
+         _Gatelist[id]->_outinvert.push_back(false);
       }
    }
 }

@@ -20,10 +20,12 @@ using namespace std;
 extern CirMgr *cirMgr;
 
 // TODO: Implement memeber functions for class(es) in cirGate.h
-unsigned CirGate::_gmark =0;
+
 /**************************************/
 /*   class CirGate member functions   */
 /**************************************/
+unsigned CirGate::_gmark =0;
+
 void
 CirGate::reportGate() const
 {
@@ -39,7 +41,7 @@ CirGate::reportGate() const
 }
 
 void
-CirGate::reportFanin(int level)
+CirGate::reportFanin(int level) const
 {
    assert (level >= 0);
    _gmark++;
@@ -47,7 +49,7 @@ CirGate::reportFanin(int level)
 }
 
 void
-CirGate::reportFanout(int level)
+CirGate::reportFanout(int level) const
 {
    assert (level >= 0);
    _gmark++;
@@ -55,7 +57,7 @@ CirGate::reportFanout(int level)
 }
 
 void
-CirGate::dfs_fanin(int level, int cur)
+CirGate::dfs_fanin(int level, int cur) const
 {
    if(level != -1) if(cur > level) return;
    int _cur = cur;
@@ -78,7 +80,7 @@ CirGate::dfs_fanin(int level, int cur)
 }
 
 void 
-CirGate::dfs_fanout(int level, int cur)
+CirGate::dfs_fanout(int level, int cur) const
 {
    if(level != -1) if(cur > level) return;
    int _cur = cur;

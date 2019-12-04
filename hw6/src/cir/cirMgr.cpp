@@ -222,6 +222,7 @@ CirMgr::printNetlist() const
 {
    // cout<<_dfsList.size()<<endl;
    unsigned n = 0;
+   cout<<endl;
    for (size_t i = 0; i < _dfsList.size(); i++) {
       if (_dfsList[i]->_type == PI_GATE)
       {
@@ -350,13 +351,13 @@ CirMgr::writeAag(ostream& outfile) const
       comment++;
    }
    outfile<<"c"<<endl;
-   // outfile<<"AAG output by Chung-Yang (Ric) Huang"<<endl;
-   outfile<<"AAG output by Chien-Ying (Catherine) Yang"<<endl;
+   outfile<<"AAG output by Chung-Yang (Ric) Huang"<<endl;
+   // outfile<<"AAG output by Chien-Ying (Catherine) Yang"<<endl;
 }
 
-
 void
-CirMgr::readHeader(){
+CirMgr::readHeader()
+{
    vector<string> header;
    string::size_type pos1_, pos2_;
    string d = " ";
@@ -381,7 +382,8 @@ CirMgr::readHeader(){
 }
 
 void
-CirMgr::readInput(){
+CirMgr::readInput()
+{
    // PI_GATE
    for (unsigned i = 0; i < I; i++) {
       unsigned id = atof(l[i+1].c_str())/2;
@@ -392,7 +394,8 @@ CirMgr::readInput(){
 }
 
 void
-CirMgr::readOutput(){
+CirMgr::readOutput()
+{
    // PO_GATE
    for (unsigned i = 0; i < O; i++) {
       unsigned id = M+i+1;
@@ -403,7 +406,8 @@ CirMgr::readOutput(){
 }
 
 void
-CirMgr::readAig(){
+CirMgr::readAig()
+{
    // AIG_GATE
    for (unsigned i = 0; i < A; i++) {
       vector<string> Aigs; //parse AIG | INPUT1 | INPUT2
@@ -416,7 +420,8 @@ CirMgr::readAig(){
 }
 
 void
-CirMgr::readComment(){
+CirMgr::readComment()
+{
    int nameLine = I+O+A+1;
    while (nameLine < l.size()){
       if (l[nameLine] == "c") break;
@@ -443,7 +448,8 @@ CirMgr::readComment(){
 }
 
 void
-CirMgr::connection(){
+CirMgr::connection()
+{
    // DEAL WITH AIG_GATE's FAN_IN FAN_OUT
    for (unsigned i = 0; i < A; i++) {
       // parse _aig[i] | INPUT1 | INPUT2
@@ -517,7 +523,8 @@ CirMgr::lexOptions(const string& option, vector<string>& tokens) const
 }
 
 void
-CirMgr::DFS(){          
+CirMgr::DFS()
+{          
    _globalRef = 0;
    _globalRef++;
    for (unsigned i = 0; i < _out.size(); i++) {
@@ -525,9 +532,9 @@ CirMgr::DFS(){
    }
 }
 
-
 void
-CirMgr::DFSVisit(unsigned vertex) {
+CirMgr::DFSVisit(unsigned vertex)
+{
    if (_Gatelist[vertex]->_fanin.size() > 0) {
       for (size_t i = 0; i < _Gatelist[vertex]->_fanin.size(); i++) {
          if(_Gatelist[vertex]->_fanin[i]->_ref != _globalRef) {

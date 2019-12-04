@@ -49,16 +49,16 @@ public:
   // Printing functions
   virtual void printGate() const = 0;
   void reportGate() const;
-  void reportFanin(int level);
-  void reportFanout(int level);
+  void reportFanin(int level) const;
+  void reportFanout(int level) const;
 
   static unsigned _gmark;
   mutable unsigned _mark;
-  // void mark() { _stat = _gstat; }
-  // bool marked() { return _stat == _gstat; }
-  // void resetmark() { ++_gstat; }
-  void dfs_fanin(int level, int cur);
-  void dfs_fanout(int level, int cur);
+  void mark() { _mark = _gmark; }
+  bool marked() { return _mark == _gmark; }
+  void resetmark() { ++_gmark; }
+  void dfs_fanin(int level, int cur) const;
+  void dfs_fanout(int level, int cur) const;
   
 private:
   

@@ -54,9 +54,9 @@ public:
 
   static unsigned _gmark;
   mutable unsigned _mark;
-  void mark() { _mark = _gmark; }
-  bool marked() { return _mark == _gmark; }
-  void resetmark() { ++_gmark; }
+  // void mark() { _mark = _gmark; }
+  // bool marked() { return _mark == _gmark; }
+  // void resetmark() { ++_gmark; }
   void dfs_fanin(int level, int cur) const;
   void dfs_fanout(int level, int cur) const;
   

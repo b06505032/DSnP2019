@@ -208,6 +208,7 @@ Circuit Statistics
 void
 CirMgr::printSummary() const
 {
+   cout << endl;
    cout << "Circuit Statistics" << endl;
    cout << "==================" << endl;
    cout << "  PI    " << setw(8) << right << I << endl;

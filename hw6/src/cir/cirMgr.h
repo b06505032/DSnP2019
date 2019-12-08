@@ -26,7 +26,11 @@ class CirMgr
 {
 public:
    CirMgr(){}
-   ~CirMgr() {}
+   ~CirMgr() {
+      for(size_t i=0;i!=_Gatelist.size();i++) {
+         delete _Gatelist[i];
+      }
+   }
 
    // Access functions
    // return '0' if "gid" corresponds to an undefined gate.
@@ -48,14 +52,13 @@ public:
    void writeAag(ostream&) const;
 
 private:
-   // m, maximum index
-   // i, #inputs
-   // l, #latches = 0
-   // o, #outputs
-   // a, #AND gates
-   vector<string> l;
-   // unsigned miloa[5];
+   // M, maximum index
+   // I, #inputs
+   // L, #latches = 0
+   // O, #outputs
+   // A, #AND gates
    unsigned M,I,L,O,A;
+   vector<string> l;
    GateList _in;
    GateList _out;
    GateList _aig;

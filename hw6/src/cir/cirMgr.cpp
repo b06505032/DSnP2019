@@ -178,9 +178,7 @@ CirMgr::readCircuit(const string& fileName)
    }
    if(pos1 != aagstring.length())
       l.push_back(aagstring.substr(pos1));
-   // for(vector<string>::size_type i = 0; i != l.size(); ++i)
-      // cout << "l["<<i<<"]" << l[i] << endl;
-
+   // 3. read the GATE
    readHeader();
    _Gatelist[0] = new CirConstGate();
    readInput();
@@ -189,7 +187,6 @@ CirMgr::readCircuit(const string& fileName)
    readComment();
    connection();
    DFS();
-
    return true;
 }
 
@@ -259,7 +256,8 @@ CirMgr::printNetlist() const
          _dfsList[i]->printGate();
          cout << endl;
       }
-      else {
+      else
+      {
          n++;
       }
    }
@@ -269,9 +267,8 @@ void
 CirMgr::printPIs() const
 {
    cout << "PIs of the circuit:";
-   for (unsigned i = 0; i < _in.size(); i++) {
+   for (unsigned i = 0; i < _in.size(); i++) 
      cout << ' ' << _in[i]->_id;
-   }
    cout << endl;
 }
 
@@ -279,9 +276,8 @@ void
 CirMgr::printPOs() const
 {
    cout << "POs of the circuit:";
-   for (unsigned i = 0; i < _out.size(); i++) {
+   for (unsigned i = 0; i < _out.size(); i++)
      cout << ' ' << _out[i]->_id;
-   }
    cout << endl;
 }
 
@@ -345,7 +341,8 @@ CirMgr::writeAag(ostream& outfile) const
       outfile << endl;
    }
    int comment = I+O+A+1;
-   while (comment < l.size()) {
+   while (comment < l.size())
+   {
       if (l[comment] == "c") break;
       outfile << l[comment];
       outfile << endl;
@@ -385,8 +382,8 @@ CirMgr::readHeader()
 void
 CirMgr::readInput()
 {
-   // PI_GATE
-   for (unsigned i = 0; i < I; i++) {
+   for (unsigned i = 0; i < I; i++)
+   {
       unsigned id = atof(l[i+1].c_str())/2;
       unsigned lineNo = i+2;
       _in[i] = new CirPiGate(id, lineNo);
@@ -397,8 +394,8 @@ CirMgr::readInput()
 void
 CirMgr::readOutput()
 {
-   // PO_GATE
-   for (unsigned i = 0; i < O; i++) {
+   for (unsigned i = 0; i < O; i++)
+   {
       unsigned id = M+i+1;
       unsigned lineNo = i+2+I;
       _out[i] = new CirPoGate(id, lineNo);
@@ -410,7 +407,8 @@ void
 CirMgr::readAig()
 {
    // AIG_GATE
-   for (unsigned i = 0; i < A; i++) {
+   for (unsigned i = 0; i < A; i++)
+   {
       vector<string> Aigs; //parse AIG | INPUT1 | INPUT2
       if (!lexOptions(l[i+1+I+O], Aigs)) return;
       unsigned id = atof(Aigs[0].c_str())/2;
@@ -424,7 +422,8 @@ void
 CirMgr::readComment()
 {
    int nameLine = I+O+A+1;
-   while (nameLine < l.size()){
+   while (nameLine < l.size())
+   {
       if (l[nameLine] == "c") break;
       vector<string> newName;
       if (!lexOptions(l[nameLine], newName)) return ;
@@ -528,9 +527,8 @@ CirMgr::DFS()
 {          
    _globalRef = 0;
    _globalRef++;
-   for (unsigned i = 0; i < _out.size(); i++) {
+   for (unsigned i = 0; i < _out.size(); i++)
       DFSVisit(_out[i]->_id);
-   }
 }
 
 void

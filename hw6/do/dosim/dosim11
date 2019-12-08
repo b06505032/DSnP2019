@@ -1,0 +1,22 @@
+cirr -r tests.fraig/sim11.aag
+cirp
+cirp -n
+cirp -pi
+cirp -po
+cirp -fl
+cirg 0
+cirg 0 -fani 100
+cirg 1
+cirg 1 -fani 100
+cirg 2
+cirg 2 -fani 100
+cirg 3
+cirg 3 -fani 100
+cirg 4
+cirg 4 -fani 100
+cirg 5
+cirg 5 -fani 100
+cirg 6
+cirg 6 -fani 100
+cirw
+q -f

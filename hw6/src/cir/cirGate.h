@@ -43,20 +43,18 @@ public:
   }
   unsigned getLineNo() const { return _lineNo; }
 
-  // for DFS
-  unsigned _ref;
-
   // Printing functions
   virtual void printGate() const = 0;
   void reportGate() const;
   void reportFanin(int level) const;
   void reportFanout(int level) const;
 
+  // for DFS in Mgr
+  unsigned _ref;
+
+  // for DFS -fanin -fanout
   static unsigned _gmark;
   mutable unsigned _mark;
-  // void mark() { _mark = _gmark; }
-  // bool marked() { return _mark == _gmark; }
-  // void resetmark() { ++_gmark; }
   void dfs_fanin(int level, int cur) const;
   void dfs_fanout(int level, int cur) const;
   
@@ -91,19 +89,19 @@ public:
 class CirPoGate: public CirGate  {
 public:
   CirPoGate(unsigned id, unsigned lineNo): CirGate(PO_GATE, id, lineNo) {}
-  void printGate() const{ cout << "PO  " << _id << " "; }
+  void printGate() const { cout << "PO  " << _id << " "; }
 };
 
 class CirAigGate: public CirGate {
 public:
   CirAigGate(unsigned id, unsigned lineNo): CirGate(AIG_GATE, id, lineNo) {}
-  void printGate() const{cout << "AIG " << _id << " "; }
+  void printGate() const { cout << "AIG " << _id << " "; }
 };
 
 class CirUndefGate: public CirGate  {
 public:
   CirUndefGate(unsigned id): CirGate(UNDEF_GATE, id, 0) {}
-  void printGate() const{ cout << "UNDEF " << _id; }
+  void printGate() const { cout << "UNDEF " << _id; }
 };
 
 #endif // CIR_GATE_H

@@ -29,8 +29,23 @@ public:
    size_t size() const { return _data.size(); }
 
    // TODO
-   const Data& min() const { return Data(); }
-   void insert(const Data& d) { }
+   const Data& min() const { return _data.front(); }
+   void insert(const Data& d)
+   { 
+      _data.push_back(d);
+      size_t t = _data.size() - 1;
+      while( t > 0)
+      {
+         size_t p = (t-1) / 2;
+         if(d < _data[p])
+         {
+            _data[t] = _data[p];
+            t = p;
+         }
+         else break;
+      }
+      _data[t] = d;
+   }
    void delMin() { }
    void delData(size_t i) { }
 

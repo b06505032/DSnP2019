@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "deque": "cpp",
+        "iterator": "cpp",
+        "*.tcc": "cpp",
+        "optional": "cpp",
+        "cmath": "cpp",
+        "vector": "cpp"
+    }
+}

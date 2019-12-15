@@ -49,22 +49,22 @@ public:
    void delMin() { delData(0); }
    void delData(size_t i) 
    { 
-      swap(_data[i], _data[size() - 1]);
-      _data.erase(_data.end() - 1);
-      size_t s = _data.size();
-      while (i*2+2 < s) {
-         if (_data[i*2+1] < _data[i] && _data[i*2+1] <  _data[i*2+2]) {
-            swap(_data[i], _data[i*2+1]);
-            i = i*2+1;
-         } 
-         else if (_data[i*2+2] < _data[i]) {
-            swap(_data[i], _data[i*2+2]);
-            i = i*2+2;
-         } 
-         else break;
+      _data[0] = _data[size()-1];
+      _data.pop_back();
+      size_t n = i;
+      size_t c = 2*n + 1;
+      while(c < size())    
+      {
+         if (c+1 < size()) // has right child
+         {
+            if ( _data[c+1] < _data[c] )
+               c++; // to the smaller child
+         }
+         if (_data[c] < _data[n] ) // parent is lager
+            swap(_data[n], _data[c]);
+         n = c;
+         c = 2*n + 1;
       }
-      if (i*2+2 == s && _data[i*2+1] < _data[i])
-         swap(_data[i], _data[i*2+1]);
    }
 
 private:

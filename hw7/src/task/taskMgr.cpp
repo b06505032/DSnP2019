@@ -125,8 +125,8 @@ bool
 TaskMgr::assign(size_t l)
 {
    // TODO...
-   if(!_taskHeap.size()) return false;
-   if(!size())   return false;
+   if(empty())
+      return false;
    string key = _taskHeap.min().getName();
    size_t value = _taskHeap.min().getLoad();
    value+=l;

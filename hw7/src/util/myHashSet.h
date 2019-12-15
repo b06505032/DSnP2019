@@ -52,14 +52,20 @@ public:
       ~iterator() {}
       const Data& operator * () const { return *(_node); }
       iterator& operator ++ () { 
-         if(_buckets[_bucketid].size() > 1 && _index < _buckets[_bucketid].size() - 1)
+         if(_buckets[_bucketid].size() >= 2 && _index < _buckets[_bucketid].size() - 1)
          {
             _index++;
             _node = &_buckets[_bucketid][_index];
          }
          else
          {
-            while(_buckets[++_bucketid].empty() && _bucketid < _numBuckets) {}
+            _bucketid++;
+            while(_bucketid < _numBuckets) 
+            {
+               if(_buckets[_bucketid].empty()) 
+                  _bucketid++; 
+               else break;
+            }
             _index = 0;
             _node = &_buckets[_bucketid][_index];
          }
@@ -67,14 +73,15 @@ public:
       } 
       iterator operator ++ (int) { iterator it = (*this); (*this)++; return it; }
       iterator& operator -- () { 
-         if(_buckets[_bucketid].size() > 1 && _index >= 0)
+         if(_buckets[_bucketid].size() >= 2 && _index > 0)
          {
             _index--;
             _node = &_buckets[_bucketid][_index];
          }
          else
          {
-            while (_buckets[++_bucketid].empty()) {}
+            _bucketid++;
+            while (_buckets[_bucketid].empty()) { _bucketid++; }
             _index = _buckets[_bucketid].size() - 1;
             _node = &_buckets[_bucketid][_index];
          }
@@ -117,7 +124,6 @@ public:
    //
    // Point to the first valid data
    iterator begin() const { 
-      // for (size_t id = 0; id < _numBuckets; id++)
       size_t id = 0;
       while( id < _numBuckets )
       {

@@ -125,6 +125,15 @@ bool
 TaskMgr::assign(size_t l)
 {
    // TODO...
+   if(!_taskHeap.size()) return false;
+   if(!size())   return false;
+   string key = _taskHeap.min().getName();
+   size_t value = _taskHeap.min().getLoad();
+   value+=l;
+   TaskNode newMinNode(key,value);
+   _taskHeap.delMin();
+   _taskHeap.insert(newMinNode);
+   _taskHash.update(newMinNode);
    return true;
 }
 

@@ -117,12 +117,14 @@ public:
    //
    // Point to the first valid data
    iterator begin() const { 
-      for (size_t id = 0; id < _numBuckets; id++)
+      // for (size_t id = 0; id < _numBuckets; id++)
+      size_t id = 0;
+      while( id < _numBuckets )
       {
          if(_buckets[id].size()) {
             return iterator(id, _numBuckets, _buckets);
-            break;
          }
+         id++;
       }
       return end(); 
    }
@@ -143,6 +145,8 @@ public:
    // else return false;
    bool check(const Data& d) const { 
       size_t id = bucketNum(d);
+      if (_buckets[id].empty())
+         return false;
       for(size_t index = 0; index != _buckets[id].size(); index++)
          if(_buckets[id][index] == d) return true;
       return false;
@@ -152,12 +156,15 @@ public:
    // if yes, replace d with the data in the hash and return true;
    // else return false;
    bool query(Data& d) const {
-      if(!check(d)) return false;
-      size_t id = bucketNum(d);
-      for(size_t index = 0; index < _buckets[id].size(); index++) {
-         if(_buckets[id][index] == d) {
-            d = _buckets[id][index];
-            return true;
+      if(!check(d)) 
+         return false;
+      else {
+         size_t id = bucketNum(d);
+         for(size_t index = 0; index < _buckets[id].size(); index++) {
+            if(_buckets[id][index] == d) {
+               d = _buckets[id][index];
+               return true;
+            }
          }
       }
    }
@@ -171,12 +178,12 @@ public:
          _buckets[id].push_back(d);
          return false;
       }
-      for (size_t index = 0; index < _buckets[id].size(); index++)
-      {
-         if(_buckets[id][index] == d)
-         {
-            _buckets[id][index] = d;
-            return true;
+      else {
+         for (size_t index = 0; index < _buckets[id].size(); index++) {
+            if(_buckets[id][index] == d) {
+               _buckets[id][index] = d;
+               return true;
+            }
          }
       }
    }
@@ -193,15 +200,16 @@ public:
    // return true if removed successfully (i.e. d is in the hash)
    // return fasle otherwise (i.e. nothing is removed)
    bool remove(const Data& d) { 
-      if(!check(d)) return false;
-      size_t id = bucketNum(d);
-      for (size_t index = 0; index < _buckets[id].size(); index++)
-      {
-         if(_buckets[id][index] == d)
-         {
-            // cout << "Task node removed (in hash): " <<endl;
-            _buckets[id].erase(_buckets[id].begin() + index);
-            return true;
+      if(!check(d)) 
+         return false;
+      else {
+         size_t id = bucketNum(d);
+         for (size_t index = 0; index < _buckets[id].size(); index++) {
+            if(_buckets[id][index] == d) {
+               // cout << "Task node removed (in hash): " <<endl;
+               _buckets[id].erase(_buckets[id].begin() + index);
+               return true;
+            }
          }
       }
    }

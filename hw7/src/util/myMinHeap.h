@@ -29,14 +29,14 @@ public:
    size_t size() const { return _data.size(); }
 
    // TODO
-   const Data& min() const { return _data.front(); }
+   const Data& min() const { return _data[0]; }
    void insert(const Data& d)
    { 
       _data.push_back(d);
       size_t t = _data.size() - 1;
       while( t > 0)
       {
-         size_t p = (t-1) / 2;
+         size_t p = (t-1) / 2; // parent = (child-1) /2
          if(d < _data[p])
          {
             _data[t] = _data[p];
@@ -46,8 +46,26 @@ public:
       }
       _data[t] = d;
    }
-   void delMin() { }
-   void delData(size_t i) { }
+   void delMin() { delData(0); }
+   void delData(size_t i) 
+   { 
+      swap(_data[i], _data[size() - 1]);
+      _data.erase(_data.end() - 1);
+      size_t s = _data.size();
+      while (i*2+2 < s) {
+         if (_data[i*2+1] < _data[i] && _data[i*2+1] <  _data[i*2+2]) {
+            swap(_data[i], _data[i*2+1]);
+            i = i*2+1;
+         } 
+         else if (_data[i*2+2] < _data[i]) {
+            swap(_data[i], _data[i*2+2]);
+            i = i*2+2;
+         } 
+         else break;
+      }
+      if (i*2+2 == s && _data[i*2+1] < _data[i])
+         swap(_data[i], _data[i*2+1]);
+   }
 
 private:
    // DO NOT add or change data members

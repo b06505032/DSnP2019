@@ -213,7 +213,8 @@ public:
          for (size_t index = 0; index < _buckets[id].size(); index++) {
             if(_buckets[id][index] == d) {
                // cout << "Task node removed (in hash): " <<endl;
-               _buckets[id].erase(_buckets[id].begin() + index);
+               _buckets[id][index] = _buckets[id][_buckets[id].size()-1];
+               _buckets[id].pop_back();
                return true;
             }
          }

@@ -49,10 +49,11 @@ public:
    void delMin() { delData(0); }
    void delData(size_t i) 
    { 
-      _data[0] = _data[size()-1];
-      _data.pop_back();
       size_t n = i;
-      size_t c = 2*n + 1;
+      size_t c = 2*n + 1; //_left
+      _data[n] = _data[size()-1];
+      _data.pop_back();
+      // swap down
       while(c < size())    
       {
          if (c+1 < size()) // has right child
@@ -65,6 +66,20 @@ public:
          n = c;
          c = 2*n + 1;
       }
+      // swap up
+      size_t t = i;
+      Data d = _data[t];
+      while( t > 1)
+      {
+         size_t p = (t-1) / 2; // parent = (child-1) /2
+         if(d < _data[p])
+         {
+            _data[t] = _data[p];
+            t = p;
+         }
+         else break;
+      }
+      _data[t] = d;
    }
 
 private:

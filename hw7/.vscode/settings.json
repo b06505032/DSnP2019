@@ -5,6 +5,7 @@
         "*.tcc": "cpp",
         "optional": "cpp",
         "cmath": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "type_traits": "cpp"
     }
 }
